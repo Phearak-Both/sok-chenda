@@ -1,0 +1,35 @@
+{
+  "name": "sok-chenda",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "setup": "tsx scripts/setup.ts",
+    "seed:samples": "tsx scripts/seed-samples.ts",
+    "owner:create": "tsx scripts/create-owner.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "next": "^15.5.27",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "sharp": "^0.35.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "19.1",
+    "@types/react-dom": "19.1",
+    "tailwindcss": "4.1",
+    "tsx": "4.20",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "postcss": "8.5.29"
+  }
+}

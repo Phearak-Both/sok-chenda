@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.local
+.env*.local
+# Database and uploaded photos live here — back this folder up, never commit it.
+data/
+.DS_Store
