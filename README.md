@@ -1,2 +1,2 @@
 # sok-chenda
-A modern luxury jewelry boutique website for Sok Chenda (សុខ ចិន្ដា), featuring a bilingual English–Khmer storefront and product management dashboard.
+A freelance web development project for Sok Chenda (សុខ ចិន្ដា), featuring a bilingual luxury jewelry storefront and a private product management dashboard.
