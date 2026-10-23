@@ -101,7 +101,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               {product.weightGrams !== null && (
                 <div className="mt-5">
                   <p className="eyebrow text-ink-faint">{t.product.weight}</p>
-                  <WeightTag grams={product.weightGrams} locale={locale} detailed className="mt-1 block text-xl md:text-2xl" />
+                  <WeightTag grams={product.weightGrams} locale={locale} className="mt-1 block text-xl md:text-2xl" />
                 </div>
               )}
 

@@ -1,7 +1,7 @@
 import type { Locale } from "./types";
 
 /** What a piece is made of. Platinum is sold in several grades (ទឹក). */
-export const METAL_TYPES = ["kilo", "platinum_7vn", "platinum_7", "platinum_7_5", "platinum_5"] as const;
+export const METAL_TYPES = ["kilo", "platinum_7vn", "platinum_7", "platinum_5"] as const;
 export type MetalType = (typeof METAL_TYPES)[number];
 
 export const PLATINUM_GRADES = METAL_TYPES.filter((m) => m.startsWith("platinum_"));
@@ -13,7 +13,6 @@ const LABELS: Record<MetalType, { km: string; en: string; gradeKm?: string; grad
   kilo: { km: "មាសគីឡូ", en: "Kilo gold" },
   platinum_7vn: { km: "ផ្លាទីនទឹក 7 VN", en: "Platinum 7 VN", gradeKm: "ទឹក 7 VN", gradeEn: "7 VN" },
   platinum_7: { km: "ផ្លាទីនទឹក 7", en: "Platinum 7", gradeKm: "ទឹក 7", gradeEn: "7" },
-  platinum_7_5: { km: "ផ្លាទីនទឹក 7.5", en: "Platinum 7.5", gradeKm: "ទឹក 7.5", gradeEn: "7.5" },
   platinum_5: { km: "ផ្លាទីនទឹក 5", en: "Platinum 5", gradeKm: "ទឹក 5", gradeEn: "5" },
 };
 

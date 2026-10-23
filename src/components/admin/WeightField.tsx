@@ -3,20 +3,20 @@
 import { useState } from "react";
 import { useI18n } from "@/i18n/client";
 import {
+  formatWeight,
   formatWeightKm,
   parseWeightInput,
   UNIT_EN,
   UNIT_KM,
   WEIGHT_UNITS,
   weightInputValue,
-  weightSecondary,
   type WeightUnit,
 } from "@/lib/weight";
 import { FieldError } from "./fields";
 
 /** Gold weight typed in ដំឡឹង / ជី / ហ៊ុន / grams. Switching unit converts the number, keeping the weight. */
 export function WeightField({ initialGrams, error }: { initialGrams: number | null; error?: string }) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const p = t.admin.products;
   const [unit, setUnit] = useState<WeightUnit>("chi");
   const [value, setValue] = useState(weightInputValue(initialGrams, "chi"));
@@ -30,7 +30,7 @@ export function WeightField({ initialGrams, error }: { initialGrams: number | nu
 
   return (
     <div>
-      <div className="grid grid-cols-[1fr_auto] gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="f-weight_value" className="field-label">
             {p.weight}
@@ -72,7 +72,7 @@ export function WeightField({ initialGrams, error }: { initialGrams: number | nu
           <span lang="km" className="font-medium">
             {formatWeightKm(grams)}
           </span>
-          <span className="block text-xs text-ink-faint">{weightSecondary(grams, locale)}</span>
+          <span className="block text-xs text-ink-faint">English: {formatWeight(grams, "en")}</span>
         </p>
       )}
       <FieldError message={error ?? (grams === "invalid" ? p.invalidWeight : undefined)} />

@@ -56,8 +56,8 @@ The owner enters a weight in any of these units, and switching units converts th
 | ជី      | 10 ហ៊ុន          | 3.75 g   |
 | ហ៊ុន    |                  | 0.375 g  |
 
-The weight is stored in grams and always displayed in Khmer units, e.g. `1 ដំឡឹង 2 ជី 5 ហ៊ុន`.
-Grams (and, for English visitors, the English unit names) appear as secondary text.
+The weight is stored in grams. Khmer visitors see Khmer units, e.g. `1 ដំឡឹង 2 ជី 5 ហ៊ុន`; English visitors see grams, e.g. `46.875 g`.
+The gold price bar follows the same rule: `ក្នុង 1 ជី` in Khmer, `per 3.75 g` in English.
 The Collections page can be sorted by weight. Prices are not shown anywhere. The database still has the old price columns, unused.
 
 ## Deploying
