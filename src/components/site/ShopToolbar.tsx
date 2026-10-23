@@ -1,12 +1,10 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { type ReactNode, useEffect, useRef, useState, useTransition } from "react";
 import { useI18n } from "@/i18n/client";
 import { gradeLabel, metalLabel, PLATINUM_GRADES, PLATINUM_LABEL } from "@/lib/metal";
 import { CheckIcon, ChevronDown, SearchIcon } from "../icons";
-
-type Option = { value: string; label: string };
 
 export function ShopToolbar() {
   const { t, locale } = useI18n();
@@ -28,31 +26,25 @@ export function ShopToolbar() {
   };
 
   const metal = params.get("metal") ?? "";
+  const sort = params.get("sort") ?? "";
   const platinumActive = metal === "platinum" || metal.startsWith("platinum_");
+  // Platinum comes in several grades (ទឹក), so its chip opens a menu; the chip shows the chosen grade.
+  const grade = PLATINUM_GRADES.find((g) => g === metal);
+  const platinumOptions = [
+    { value: "platinum", label: t.shop.allPlatinum },
+    ...PLATINUM_GRADES.map((g) => ({ value: g, label: gradeLabel(g, locale) })),
+  ];
+  const sortOptions = [
+    { value: "", label: t.shop.any },
+    { value: "weight_asc", label: t.shop.sortWeightAsc },
+    { value: "weight_desc", label: t.shop.sortWeightDesc },
+  ];
   const chip = (active: boolean, small = false) =>
     `inline-flex cursor-pointer items-center rounded-full border transition-colors ${
       small ? "min-h-9 px-4 text-[0.8125rem]" : "min-h-10 px-5 text-sm"
     } ${active ? "border-ink bg-ink text-ivory" : "border-line hover:border-ink"}`;
 
   const hasFilters = ["q", "collection", "sort", "category", "metal"].some((k) => params.get(k));
-
-  const select = (name: string, label: string, options: Option[]) => (
-    <label className="relative flex min-w-0 basis-full flex-col gap-1 sm:basis-auto">
-      <span className="eyebrow text-ink-faint">{label}</span>
-      <select
-        value={params.get(name) ?? ""}
-        onChange={(e) => update({ [name]: e.target.value })}
-        className="min-h-10 w-full cursor-pointer appearance-none border-b border-line bg-transparent pr-6 text-sm outline-none focus:border-ink sm:w-48"
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown size={14} className="pointer-events-none absolute bottom-3 right-0 text-ink-faint" />
-    </label>
-  );
 
   return (
     <div className={`transition-opacity ${pending ? "opacity-60" : ""}`} aria-busy={pending}>
@@ -94,14 +86,32 @@ export function ShopToolbar() {
                   {label}
                 </button>
               ))}
-              <PlatinumMenu value={metal} onChange={(v) => update({ metal: v })} className={chip(platinumActive)} />
+              <ChipMenu
+                name={PLATINUM_LABEL[locale]}
+                label={
+                  <>
+                    {PLATINUM_LABEL[locale]}
+                    {grade && <span className="opacity-75">· {gradeLabel(grade, locale)}</span>}
+                  </>
+                }
+                value={metal}
+                options={platinumOptions}
+                onChange={(v) => update({ metal: v })}
+                className={chip(platinumActive)}
+              />
             </div>
           </div>
-          {select("sort", t.shop.weight, [
-            { value: "", label: t.shop.any },
-            { value: "weight_asc", label: t.shop.sortWeightAsc },
-            { value: "weight_desc", label: t.shop.sortWeightDesc },
-          ])}
+          <div className="flex flex-col gap-1">
+            <span className="eyebrow text-ink-faint">{t.shop.weight}</span>
+            <ChipMenu
+              name={t.shop.weight}
+              label={sortOptions.find((o) => o.value === sort)?.label ?? t.shop.any}
+              value={sort}
+              options={sortOptions}
+              onChange={(v) => update({ sort: v })}
+              className={chip(sort !== "")}
+            />
+          </div>
         </div>
       </div>
       {hasFilters && (
@@ -120,12 +130,23 @@ export function ShopToolbar() {
   );
 }
 
-/**
- * Platinum comes in several grades (ទឹក), so its chip opens a small menu instead of
- * filtering straight away. The chip shows the chosen grade, e.g. "ផ្លាទីន · ទឹក 7".
- */
-function PlatinumMenu({ value, onChange, className }: { value: string; onChange: (v: string) => void; className: string }) {
-  const { t, locale } = useI18n();
+/** A filter chip that opens a small menu of options, e.g. the platinum grades or the weight sort. */
+function ChipMenu({
+  name,
+  label,
+  value,
+  options,
+  onChange,
+  className,
+}: {
+  /** Accessible name of the menu, e.g. "Platinum". */
+  name: string;
+  label: ReactNode;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (v: string) => void;
+  className: string;
+}) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
 
@@ -143,23 +164,16 @@ function PlatinumMenu({ value, onChange, className }: { value: string; onChange:
     };
   }, [open]);
 
-  const grade = PLATINUM_GRADES.find((g) => g === value);
-  const options = [
-    { value: "platinum", label: t.shop.allPlatinum },
-    ...PLATINUM_GRADES.map((g) => ({ value: g, label: gradeLabel(g, locale) })),
-  ];
-
   return (
     <div ref={root} className="relative">
       <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((o) => !o)} className={`${className} gap-2`}>
-        {PLATINUM_LABEL[locale]}
-        {grade && <span className="opacity-75">· {gradeLabel(grade, locale)}</span>}
+        {label}
         <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
         <div
           role="menu"
-          aria-label={PLATINUM_LABEL[locale]}
+          aria-label={name}
           className="absolute right-0 top-full z-20 mt-2 w-52 rounded-xl border border-line bg-ivory p-1.5 shadow-[0_12px_32px_-12px_rgb(26_23_20/0.25)] lg:left-0 lg:right-auto"
         >
           {options.map((o) => {

@@ -44,16 +44,14 @@ function formatUnits(grams: number, names: Record<WeightUnit, string>) {
 
 /** e.g. "1 ដំឡឹង 2 ជី 5 ហ៊ុន" */
 export const formatWeightKm = (grams: number) => formatUnits(grams, UNIT_KM);
-/** e.g. "1 domlung 2 chi 5 hun" */
-export const formatWeightEn = (grams: number) => formatUnits(grams, UNIT_EN);
 
 export function formatGrams(grams: number, locale: Locale) {
   return `${num(grams, 3)} ${locale === "km" ? "ក្រាម" : "g"}`;
 }
 
-/** Secondary line under the Khmer weight: English units + grams, or grams in Khmer. */
-export function weightSecondary(grams: number, locale: Locale) {
-  return locale === "km" ? formatGrams(grams, locale) : `${formatWeightEn(grams)} · ${formatGrams(grams, locale)}`;
+/** How the website shows a weight: Khmer units for Khmer visitors, grams for English visitors. */
+export function formatWeight(grams: number, locale: Locale) {
+  return locale === "km" ? formatWeightKm(grams) : formatGrams(grams, locale);
 }
 
 /** Parse what the owner typed. Returns grams, null for empty, or "invalid". */

@@ -117,6 +117,10 @@ const MIGRATIONS: string[] = [
   ALTER TABLE products ADD COLUMN metal_type TEXT;
   CREATE INDEX products_metal_type ON products(metal_type);
   `,
+  // Platinum 7.5 is no longer sold; its products go back to "not set" for the owner to choose.
+  `
+  UPDATE products SET metal_type = NULL WHERE metal_type = 'platinum_7_5';
+  `,
 ];
 
 function migrate(db: Database.Database) {

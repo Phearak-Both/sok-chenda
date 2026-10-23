@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Dictionary } from "@/i18n/en";
 import { fmt } from "@/i18n/format";
 import { metalLabel } from "@/lib/metal";
-import { formatPrice, formatUpdated, priceRows } from "@/lib/prices";
+import { formatPrice, formatUpdated, priceRows, unitLabel } from "@/lib/prices";
 import { getSetting } from "@/lib/settings";
 import { formatGrams, GRAMS_PER } from "@/lib/weight";
 import type { Locale } from "@/lib/types";
@@ -12,7 +12,10 @@ import { Marquee } from "./Marquee";
 export function PriceTicker({ t, locale }: { t: Dictionary; locale: Locale }) {
   const prices = getSetting("prices");
   const rows = priceRows(prices);
-  const unit = fmt(t.ticker.per, { unit: formatGrams(GRAMS_PER[prices.unit], locale) });
+  // Khmer visitors see the traditional unit (ក្នុង 1 ជី); English visitors see grams (per 3.75 g).
+  const unit = fmt(t.ticker.per, {
+    unit: locale === "km" ? `1 ${unitLabel(prices.unit, locale)}` : formatGrams(GRAMS_PER[prices.unit], locale),
+  });
 
   return (
     <aside aria-label={t.ticker.label} className="relative z-[41] border-b border-gold/25 bg-night text-[0.8125rem] text-ivory/80">
