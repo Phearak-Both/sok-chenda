@@ -16,7 +16,6 @@ export default async function HomePage() {
   const { t, locale, store } = await getSiteContext();
   const home = getSetting("home");
   const heroImage = getMedia(home.hero.imageId);
-  const storyImage = getMedia(home.story.imageId);
 
   let featured = listProducts({ featured: true, limit: 8 }).items;
   if (featured.length === 0) featured = listProducts({ sort: "newest", limit: 8 }).items;
@@ -171,12 +170,10 @@ export default async function HomePage() {
 
       {/* ---------- Visit ---------- */}
       <section className="bg-night text-ivory">
-        {/* The shop map (or photo) sits above the text on phones and tablets, beside it from xl. */}
-        <div className="grid xl:grid-cols-2">
-          <div
-            className={`relative xl:aspect-auto xl:min-h-[36rem] ${store.mapPin ? "aspect-[4/3] sm:aspect-[16/9]" : "aspect-[16/9] sm:aspect-[21/9]"}`}
-          >
-            {store.mapPin ? (
+        {/* The shop map sits above the text on phones and tablets, beside it from xl. Without a map, text only. */}
+        <div className={store.mapPin ? "grid xl:grid-cols-2" : "container-x"}>
+          {store.mapPin && (
+            <div className="relative aspect-[4/3] sm:aspect-[16/9] xl:aspect-auto xl:min-h-[36rem]">
               <iframe
                 src={mapEmbedSrc(store.mapPin, locale)}
                 title={t.home.mapTitle}
@@ -185,13 +182,8 @@ export default async function HomePage() {
                 allowFullScreen
                 className="absolute inset-0 h-full w-full border-0"
               />
-            ) : storyImage ? (
-              <Picture media={storyImage} alt="" sizes="(min-width: 1280px) 50vw, 100vw" className="absolute inset-0 h-full w-full object-cover" />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src="/brand/cover-960.webp" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-            )}
-          </div>
+            </div>
+          )}
           <div className="flex items-center px-4 py-14 sm:px-8 sm:py-16 md:px-12 md:py-20 lg:px-16 xl:px-24 xl:py-24">
             <div className="@container w-full max-w-md sm:max-w-xl xl:max-w-md">
               <p className="eyebrow text-gold-light">{t.home.visitEyebrow}</p>

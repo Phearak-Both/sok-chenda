@@ -34,7 +34,6 @@ export async function saveContent(_prev: FormState, form: FormData): Promise<For
     story: {
       title: localized(form, "story_title", 160),
       body: localized(form, "story_body", 1500),
-      imageId: mediaIdOrNull(str(form, "story_image")),
     },
     reviewed: true,
   };
@@ -59,8 +58,8 @@ export async function saveContent(_prev: FormState, form: FormData): Promise<For
 
   setSetting("home", home);
   setSetting("about", about);
-  const replaced = [before.home.hero.imageId, before.home.story.imageId, before.about.imageId].filter(
-    (id): id is string => Boolean(id) && ![home.hero.imageId, home.story.imageId, about.imageId].includes(id),
+  const replaced = [before.home.hero.imageId, before.about.imageId].filter(
+    (id): id is string => Boolean(id) && ![home.hero.imageId, about.imageId].includes(id),
   );
   deleteUnusedMedia(replaced);
   revalidatePath("/", "layout");

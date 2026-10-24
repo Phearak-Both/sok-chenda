@@ -16,7 +16,6 @@ import {
   LogoutIcon,
   MenuIcon,
   SettingsIcon,
-  TagIcon,
   UserIcon,
 } from "../icons";
 import { LanguageSwitch } from "../site/LanguageSwitch";
@@ -32,8 +31,7 @@ export function AdminShell({ email, children }: { email: string; children: React
   const items = [
     { href: "/admin", label: n.overview, Icon: HomeIcon, exact: true },
     { href: "/admin/products", label: n.products, Icon: GemIcon },
-    { href: "/admin/collections", label: n.collections, Icon: LayersIcon },
-    { href: "/admin/categories", label: n.categories, Icon: TagIcon },
+    { href: "/admin/categories", label: n.categories, Icon: LayersIcon },
     { href: "/admin/content", label: n.content, Icon: LayoutIcon },
     { href: "/admin/prices", label: n.prices, Icon: CoinsIcon },
     { href: "/admin/settings", label: n.settings, Icon: SettingsIcon },

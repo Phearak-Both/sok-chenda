@@ -5,10 +5,10 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { ShopToolbar } from "@/components/site/ShopToolbar";
 import { fmt } from "@/i18n/format";
 import { getDictionary } from "@/i18n/server";
-import { listCategories, listCollections, listProducts, type ProductSort } from "@/lib/catalog";
+import { listCategories, listProducts, type ProductSort } from "@/lib/catalog";
 import { getSiteContext } from "@/lib/site";
 import { parseMetalFilter } from "@/lib/metal";
-import { pick, pickLang } from "@/lib/types";
+import { pick } from "@/lib/types";
 
 const PAGE_SIZE = 24;
 
@@ -25,9 +25,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   const { t, locale } = await getSiteContext();
 
   const categories = listCategories().filter((c) => c.productCount > 0);
-  const collections = listCollections({ publishedOnly: true });
   const category = categories.find((c) => c.slug === str("category"));
-  const collection = collections.find((c) => c.slug === str("collection"));
   const metal = parseMetalFilter(str("metal"));
   const sort = (["weight_asc", "weight_desc"] as const).find((s) => s === str("sort")) as ProductSort | undefined;
   const q = str("q").slice(0, 100);
@@ -36,14 +34,13 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   const { items, total } = listProducts({
     q,
     categoryId: category?.id,
-    collectionId: collection?.id,
     metal,
     sort,
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
   });
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const filtered = Boolean(q || category || collection || metal);
+  const filtered = Boolean(q || category || metal);
 
   const linkWith = (changes: Record<string, string | undefined>) => {
     const next = new URLSearchParams();
@@ -56,18 +53,13 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     return qs ? `/collections?${qs}` : "/collections";
   };
 
-  const title = category ? pick(category.name, locale) : collection ? pick(collection.name, locale) : t.shop.title;
+  const title = category ? pick(category.name, locale) : t.shop.title;
 
   return (
     <div className="container-x pb-24 pt-10 md:pt-16">
       <header className="text-center">
         <p className="eyebrow text-gold">{total === 1 ? t.count.piece : fmt(t.count.pieces, { n: total })}</p>
         <h1 className="display mt-3 text-[2.5rem] md:text-6xl">{title}</h1>
-        {collection && !category && pick(collection.description, locale) && (
-          <p lang={pickLang(collection.description, locale)} className="mx-auto mt-4 max-w-xl text-ink-soft">
-            {pick(collection.description, locale)}
-          </p>
-        )}
         {q && <p className="mt-3 text-ink-soft">{fmt(t.shop.searchFor, { q })}</p>}
       </header>
 

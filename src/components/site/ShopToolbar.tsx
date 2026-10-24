@@ -44,7 +44,7 @@ export function ShopToolbar() {
       small ? "min-h-9 px-4 text-[0.8125rem]" : "min-h-10 px-5 text-sm"
     } ${active ? "border-ink bg-ink text-ivory" : "border-line hover:border-ink"}`;
 
-  const hasFilters = ["q", "collection", "sort", "category", "metal"].some((k) => params.get(k));
+  const hasFilters = ["q", "sort", "category", "metal"].some((k) => params.get(k));
 
   return (
     <div className={`transition-opacity ${pending ? "opacity-60" : ""}`} aria-busy={pending}>

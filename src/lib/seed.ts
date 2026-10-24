@@ -5,7 +5,6 @@ import { uniqueSlug } from "./catalog";
 import { getDb } from "./db";
 import { deleteUnusedMedia, saveImage } from "./media";
 import type { MetalType } from "./metal";
-import { getSetting, setSetting } from "./settings";
 import type { Media } from "./types";
 
 /** Region of the cover photo: centre x, centre y, height, and width/height ratio. */
@@ -31,47 +30,12 @@ const CATEGORIES = [
   { slug: "earrings", en: "Earrings", km: "ក្រវិល" },
 ];
 
-const COLLECTIONS: {
-  slug: string;
-  en: string;
-  km: string;
-  descEn: string;
-  descKm: string;
-  image: Region;
-}[] = [
-  {
-    slug: "bridal",
-    en: "Bridal",
-    km: "គ្រឿងអលង្ការកូនក្រមុំ",
-    descEn: "Statement necklaces, earrings and bangles for the wedding day and the celebrations around it.",
-    descKm: "ខ្សែក ក្រវិល និងកងដៃដ៏លេចធ្លោ សម្រាប់ថ្ងៃមង្គលការ និងពិធីបុណ្យផ្សេងៗ។",
-    image: [2300, 590, 1050, 4 / 3],
-  },
-  {
-    slug: "heritage-filigree",
-    en: "Heritage Filigree",
-    km: "ក្បាច់បុរាណ",
-    descEn: "Intricate floral and leaf motifs, worked in fine gold detail.",
-    descKm: "ក្បាច់ផ្កា និងស្លឹកឈើដ៏ល្អិតល្អន់ ធ្វើពីមាសយ៉ាងប្រណិត។",
-    image: [800, 760, 760, 4 / 3],
-  },
-  {
-    slug: "everyday-gold",
-    en: "Everyday Gold",
-    km: "មាសពាក់ប្រចាំថ្ងៃ",
-    descEn: "Bangles and rings made to be worn every day.",
-    descKm: "កងដៃ និងចិញ្ចៀន សម្រាប់ពាក់ជារៀងរាល់ថ្ងៃ។",
-    image: [1240, 1110, 560, 4 / 3],
-  },
-];
-
 type SampleProduct = {
   en: string;
   km: string;
   descEn: string;
   descKm: string;
   category: string;
-  collections: string[];
   /** Grams; shown as ដំឡឹង / ជី / ហ៊ុន. Invented, like the rest of the sample data. */
   weightGrams: number;
   /** Invented too, so the metal filter has something to show. */
@@ -87,7 +51,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A beaded gold chain finished with a cluster of filigree leaves and small hanging drops.",
     descKm: "ខ្សែកមាសក្បាច់គ្រាប់ ព្យួរដោយក្បាច់ស្លឹកឈើជាចង្កោម និងគ្រាប់តូចៗព្យួរចុះ។",
     category: "necklaces",
-    collections: ["heritage-filigree"],
     weightGrams: 11.25,
     metal: "kilo",
     featured: true,
@@ -99,7 +62,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "Two layered chains — one beaded, one fine — meeting at an openwork square centrepiece.",
     descKm: "ខ្សែពីរជាន់ — មួយក្បាច់គ្រាប់ មួយទៀតល្អិត — ភ្ជាប់ដោយក្បាច់កណ្ដាលរាងការ៉េក្បាច់ប្រហោង។",
     category: "necklaces",
-    collections: ["bridal"],
     weightGrams: 18.75,
     metal: "platinum_7",
     featured: true,
@@ -111,7 +73,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A double necklace with a fan-shaped centrepiece and fringe of tassels, made for the wedding day.",
     descKm: "ខ្សែកពីរជាន់ មានក្បាច់កណ្ដាលរាងផ្លិត និងរំយោលព្យួរ សម្រាប់ថ្ងៃមង្គលការ។",
     category: "necklaces",
-    collections: ["bridal"],
     weightGrams: 45,
     metal: "kilo",
     featured: true,
@@ -123,7 +84,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A broad collar of patterned links paired with a long chain of medallions.",
     descKm: "ខ្សែកធំៗក្បាច់ច្រវាក់ ផ្គូផ្គងជាមួយខ្សែវែងមានមេដាយ។",
     category: "necklaces",
-    collections: ["bridal", "heritage-filigree"],
     weightGrams: 56.25,
     metal: "kilo",
     featured: false,
@@ -135,7 +95,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A wide bangle with a woven, textured surface that catches the light from every angle.",
     descKm: "កងដៃធំ មានផ្ទៃក្បាច់ត្បាញ ដែលចាំងពន្លឺពីគ្រប់ទិសទី។",
     category: "bracelets-bangles",
-    collections: ["everyday-gold"],
     weightGrams: 15,
     metal: "platinum_7vn",
     featured: true,
@@ -147,7 +106,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A bold cuff engraved with crossing geometric patterns.",
     descKm: "កងដៃធំ ឆ្លាក់ក្បាច់ធរណីមាត្រឆ្លាស់គ្នា។",
     category: "bracelets-bangles",
-    collections: ["heritage-filigree"],
     weightGrams: 22.5,
     metal: "platinum_7",
     featured: false,
@@ -159,7 +117,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A domed ring of layered filigree petals.",
     descKm: "ចិញ្ចៀនរាងប៉ោង ក្បាច់ផ្កាត្រួតគ្នាជាច្រើនជាន់។",
     category: "rings",
-    collections: ["heritage-filigree"],
     weightGrams: 5.625,
     metal: "platinum_5",
     featured: true,
@@ -171,7 +128,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "Long drop earrings with a flower stud and an openwork diamond-shaped drop.",
     descKm: "ក្រវិលព្យួរវែង មានក្បាលរាងផ្កា និងគ្រឿងព្យួររាងពេជ្រក្បាច់ប្រហោង។",
     category: "earrings",
-    collections: ["bridal"],
     weightGrams: 7.5,
     metal: "platinum_7",
     featured: true,
@@ -183,7 +139,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "Sculptural earrings shaped like a peacock's plume, with fine feathered detail.",
     descKm: "ក្រវិលរាងកន្ទុយក្ងោក មានក្បាច់រោមល្អិតល្អន់។",
     category: "earrings",
-    collections: ["heritage-filigree"],
     weightGrams: 9.375,
     metal: "kilo",
     featured: false,
@@ -195,7 +150,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "A rounded ring covered in tiny gold beads.",
     descKm: "ចិញ្ចៀនរាងមូល គ្របដោយគ្រាប់មាសតូចៗ។",
     category: "rings",
-    collections: ["everyday-gold"],
     weightGrams: 3.75,
     metal: "platinum_7vn",
     featured: true,
@@ -207,7 +161,6 @@ const SAMPLES: SampleProduct[] = [
     descEn: "Slim bangles in twisted and beaded designs, lovely worn together.",
     descKm: "កងដៃស្ដើងៗ ក្បាច់ខ្សែពួរ និងក្បាច់គ្រាប់ ស្អាតនៅពេលពាក់ជាមួយគ្នា។",
     category: "bracelets-bangles",
-    collections: ["everyday-gold"],
     weightGrams: 13.125,
     metal: "platinum_5",
     featured: true,
@@ -224,37 +177,11 @@ export function seedStructure() {
   }
 }
 
-export async function seedCollections() {
-  const db = getDb();
-  if (db.prepare("SELECT 1 FROM collections LIMIT 1").get()) return;
-  const cover = fs.readFileSync(COVER_PATH);
-  const insert = db.prepare(
-    `INSERT INTO collections (slug, name_en, name_km, description_en, description_km, image_id, sort)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-  );
-  for (const [i, c] of COLLECTIONS.entries()) {
-    const media = await saveImage(await cropCover(cover, c.image));
-    insert.run(c.slug, c.en, c.km, c.descEn, c.descKm, media.id, i);
-  }
-}
-
-/** Give the homepage "visit" banner a photo cropped from the cover, unless one is set. */
-export async function seedHomeImages() {
-  const home = getSetting("home");
-  if (home.story.imageId) return;
-  const cover = fs.readFileSync(COVER_PATH);
-  const media = await saveImage(await cropCover(cover, [900, 520, 1040, 0.85]));
-  home.story.imageId = media.id;
-  setSetting("home", home);
-}
-
 export async function seedSampleProducts() {
   const db = getDb();
   const cover = fs.readFileSync(COVER_PATH);
   const categoryId = (slug: string) =>
     (db.prepare("SELECT id FROM categories WHERE slug = ?").get(slug) as { id: number } | undefined)?.id ?? null;
-  const collectionId = (slug: string) =>
-    (db.prepare("SELECT id FROM collections WHERE slug = ?").get(slug) as { id: number } | undefined)?.id;
 
   for (const [i, p] of SAMPLES.entries()) {
     const media: Media[] = [];
@@ -283,10 +210,6 @@ export async function seedSampleProducts() {
       media.forEach((m, pos) =>
         db.prepare("INSERT INTO product_images (product_id, media_id, position) VALUES (?, ?, ?)").run(productId, m.id, pos),
       );
-      for (const slug of p.collections) {
-        const cid = collectionId(slug);
-        if (cid) db.prepare("INSERT INTO product_collections (product_id, collection_id) VALUES (?, ?)").run(productId, cid);
-      }
     })();
   }
 }

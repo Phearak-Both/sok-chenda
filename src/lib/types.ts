@@ -24,16 +24,6 @@ export type Category = {
   sort: number;
 };
 
-export type Collection = {
-  id: number;
-  slug: string;
-  name: LocalizedText;
-  description: LocalizedText;
-  image: Media | null;
-  isPublished: boolean;
-  sort: number;
-};
-
 export type Product = {
   id: number;
   slug: string;
@@ -49,7 +39,6 @@ export type Product = {
   isSample: boolean;
   sort: number;
   images: Media[];
-  collectionIds: number[];
   updatedAt: string;
 };
 

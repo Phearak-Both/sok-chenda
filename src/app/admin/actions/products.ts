@@ -56,10 +56,6 @@ export async function saveProduct(_prev: FormState, form: FormData): Promise<For
     .filter((v) => db.prepare("SELECT 1 FROM media WHERE id = ?").get(v))
     .slice(0, 20);
   const validCategory = categoryId && db.prepare("SELECT 1 FROM categories WHERE id = ?").get(categoryId) ? categoryId : null;
-  const collectionIds = form
-    .getAll("collection_ids")
-    .map((v) => Number(v))
-    .filter((v) => Number.isInteger(v) && db.prepare("SELECT 1 FROM collections WHERE id = ?").get(v));
 
   const slugInput = str(form, "slug", 100);
   const slug = uniqueSlug("products", slugInput || existing?.slug || name.en || name.km, id ?? undefined);
@@ -107,10 +103,6 @@ export async function saveProduct(_prev: FormState, form: FormData): Promise<For
     imageIds.forEach((mid, pos) =>
       db.prepare("INSERT INTO product_images (product_id, media_id, position) VALUES (?, ?, ?)").run(productId, mid, pos),
     );
-    db.prepare("DELETE FROM product_collections WHERE product_id = ?").run(productId);
-    for (const cid of collectionIds) {
-      db.prepare("INSERT INTO product_collections (product_id, collection_id) VALUES (?, ?)").run(productId, cid);
-    }
   })();
 
   if (existing) {
