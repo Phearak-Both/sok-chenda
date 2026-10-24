@@ -6,6 +6,7 @@ import { getDb } from "./db";
 import { isMetalType, METAL_TYPES, metalLabel, type MetalType } from "./metal";
 import { formatPrice, parsePrice, unitLabel, type PriceSettings } from "./prices";
 import { getSetting, setSetting } from "./settings";
+import { tg, type TelegramApi } from "./telegram-api";
 import type { Locale } from "./types";
 
 /**
@@ -25,20 +26,6 @@ export function telegramConfigured() {
   return Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_BOT_USERNAME && process.env.TELEGRAM_WEBHOOK_SECRET);
 }
 
-/** Calls a Telegram Bot API method. */
-export async function tg(method: string, body: Record<string, unknown>) {
-  const res = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/${method}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const json = (await res.json().catch(() => null)) as { ok: boolean; description?: string } | null;
-  if (!json?.ok) throw new Error(`Telegram ${method} failed: ${json?.description ?? res.status}`);
-  return json;
-}
-
-export type TelegramApi = typeof tg;
-
 const hashCode = (code: string) => crypto.createHash("sha256").update(code).digest("hex");
 
 // ---------- Linking an owner ----------
@@ -55,6 +42,8 @@ export function createLinkCode(ownerId: number) {
   );
   return code;
 }
+
+export const LINK_CODE_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 
 export function telegramLinkUrl(code: string) {
   return `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}?start=${code}`;
@@ -151,7 +140,8 @@ export async function handleUpdate(update: Update, api: TelegramApi = tg): Promi
   if (cb) await api("answerCallbackQuery", { callback_query_id: cb.id }).catch(() => {});
 
   const text = msg?.text?.trim() ?? "";
-  const start = /^\/start(?:\s+(\S+))?$/.exec(text);
+  // The link sends "/start <code>"; the owner may also paste the message, or just the code.
+  const start = /^\/start(?:\s+(\S+))?$/.exec(text) ?? (LINK_CODE_PATTERN.test(text) ? [text, text] : null);
   const updateKeyboard = { keyboard: [[{ text: t.updateButton }]], resize_keyboard: true, is_persistent: true };
 
   if (start?.[1]) {

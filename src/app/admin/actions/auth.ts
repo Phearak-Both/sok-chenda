@@ -15,7 +15,7 @@ import {
 import { getDb } from "@/lib/db";
 import { str, type FormState } from "@/lib/form";
 import { hashPassword, MIN_PASSWORD_LENGTH, verifyPassword } from "@/lib/password";
-import { createLinkCode, telegramConfigured, telegramLinkUrl, unlinkTelegram } from "@/lib/telegram";
+import { createLinkCode, telegramConfigured, unlinkTelegram } from "@/lib/telegram";
 import { fmt } from "@/i18n/format";
 
 // Compared against when the email is unknown, so response time doesn't reveal which emails exist.
@@ -75,11 +75,11 @@ export async function changePassword(_prev: FormState, form: FormData): Promise<
 
 // ---------- Telegram bot ----------
 
-/** Opens the bot with a one-time code that links this Telegram account to the signed-in owner. */
+/** Creates a one-time code that links a Telegram account to the signed-in owner; the Account page shows it. */
 export async function connectTelegram() {
   const owner = await requireOwner();
   if (!telegramConfigured()) redirect("/admin/account");
-  redirect(telegramLinkUrl(createLinkCode(owner.id)));
+  redirect(`/admin/account?telegram=${createLinkCode(owner.id)}`);
 }
 
 export async function disconnectTelegram() {

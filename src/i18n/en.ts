@@ -334,6 +334,13 @@ const en = {
       telegramConnected: "Your Telegram account is connected.",
       telegramDisconnect: "Disconnect",
       telegramNotSetUp: "The Telegram bot is not set up on this server yet.",
+      telegramStepOpen: "1. Open the bot and tap Start (or Restart).",
+      telegramOpen: "Open the bot",
+      telegramStepSend: "2. If the bot doesn't reply “Connected ✓”, send it this message. It works once, for 10 minutes.",
+      telegramCopy: "Copy",
+      telegramCopied: "Copied",
+      telegramStepDone: "3. When the bot says “Connected ✓”, reload this page.",
+      telegramReload: "Reload",
     },
   },
   /** Messages from the Telegram bot. Telegram HTML: only <b> is used. */

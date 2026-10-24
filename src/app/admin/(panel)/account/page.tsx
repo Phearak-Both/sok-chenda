@@ -1,14 +1,16 @@
 import { connectTelegram, disconnectTelegram, logout } from "@/app/admin/actions/auth";
 import { PageHeader } from "@/components/admin/AdminShell";
 import { PasswordForm } from "@/components/admin/PasswordForm";
+import { TelegramConnectCode } from "@/components/admin/TelegramConnectCode";
 import { LogoutIcon, TelegramIcon } from "@/components/icons";
 import { fmt } from "@/i18n/format";
 import { getDictionary } from "@/i18n/server";
 import { requireOwner } from "@/lib/auth";
-import { isTelegramLinked, telegramConfigured } from "@/lib/telegram";
+import { isTelegramLinked, LINK_CODE_PATTERN, telegramConfigured, telegramLinkUrl } from "@/lib/telegram";
 
-export default async function AccountPage() {
+export default async function AccountPage({ searchParams }: { searchParams: Promise<{ telegram?: string }> }) {
   const owner = await requireOwner();
+  const { telegram: code } = await searchParams;
   const { t } = await getDictionary();
   const a = t.admin.account;
   return (
@@ -30,6 +32,8 @@ export default async function AccountPage() {
               {a.telegramDisconnect}
             </button>
           </form>
+        ) : code && LINK_CODE_PATTERN.test(code) ? (
+          <TelegramConnectCode url={telegramLinkUrl(code)} message={`/start ${code}`} />
         ) : (
           <form action={connectTelegram}>
             <p className="mb-4 text-sm text-ink-soft">{a.telegramIntro}</p>
