@@ -31,7 +31,7 @@ export type HomeSettings = {
     imageId: string | null;
   };
   intro: { title: LocalizedText; body: LocalizedText };
-  story: { title: LocalizedText; body: LocalizedText; imageId: string | null };
+  story: { title: LocalizedText; body: LocalizedText };
   /** Set once the owner has saved this page, so the dashboard stops flagging starter text. */
   reviewed: boolean;
 };
@@ -91,7 +91,6 @@ export const DEFAULT_SETTINGS: SettingsMap = {
         "See each piece in person and let us help you find the right one — for yourself, or for someone you love.",
         "សូមអញ្ជើញមកទស្សនាគ្រឿងអលង្ការដ៏ស្រស់ស្អាតដោយផ្ទាល់នៅហាង សុខ ចិន្ដា។ យើងខ្ញុំរីករាយក្នុងការផ្តល់ជូននូវការណែនាំយ៉ាងយកចិត្តទុកដាក់ ដើម្បីជួយលោកអ្នកស្វែងរកគ្រឿងអលង្ការដែលស័ក្តិសមបំផុត សម្រាប់ខ្លួនឯង ឬជាកាដូដ៏មានអត្ថន័យជូនមនុស្សជាទីស្រឡាញ់។",
       ),
-      imageId: null,
     },
     reviewed: false,
   },

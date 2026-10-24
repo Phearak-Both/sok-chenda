@@ -10,7 +10,7 @@ import { WeightTag } from "@/components/site/WeightTag";
 import { fmt } from "@/i18n/format";
 import { getLocale } from "@/i18n/server";
 import { getOwner } from "@/lib/auth";
-import { getProductBySlug, getRelatedProducts, listCategories, listCollections } from "@/lib/catalog";
+import { getProductBySlug, getRelatedProducts, listCategories } from "@/lib/catalog";
 import { mediaUrl } from "@/lib/media-url";
 import { getSiteContext, getSiteUrl } from "@/lib/site";
 import { pick, pickLang } from "@/lib/types";
@@ -43,7 +43,6 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   const { t, locale, store } = await getSiteContext();
   const category = listCategories().find((c) => c.id === product.categoryId);
-  const collections = listCollections({ publishedOnly: true }).filter((c) => product.collectionIds.includes(c.id));
   const related = product.status === "published" ? getRelatedProducts(product, 4) : [];
 
   const name = pick(product.name, locale);
@@ -126,7 +125,7 @@ export default async function ProductPage({ params }: { params: Params }) {
                 <InquiryPanel message={message} whatsapp={store.whatsapp} telegram={store.telegram} phone={store.phone} />
               </section>
 
-              {(material || product.metalType || product.weightGrams !== null || category || collections.length > 0) && (
+              {(material || product.metalType || product.weightGrams !== null || category) && (
                 <section className="mt-8" aria-labelledby="details">
                   <h2 id="details" className="eyebrow text-ink-faint">
                     {t.product.details}
@@ -159,21 +158,6 @@ export default async function ProductPage({ params }: { params: Params }) {
                           <Link className="link-line" href={`/collections?category=${category.slug}`}>
                             {pick(category.name, locale)}
                           </Link>
-                        </dd>
-                      </div>
-                    )}
-                    {collections.length > 0 && (
-                      <div className="flex justify-between gap-6 py-3">
-                        <dt className="text-ink-soft">{t.nav.collections}</dt>
-                        <dd className="text-right">
-                          {collections.map((c, i) => (
-                            <span key={c.id}>
-                              {i > 0 && ", "}
-                              <Link className="link-line" href={`/collections?collection=${c.slug}`}>
-                                {pick(c.name, locale)}
-                              </Link>
-                            </span>
-                          ))}
                         </dd>
                       </div>
                     )}

@@ -3,10 +3,10 @@ A freelance web development project for Sok Chenda (សុខ ចិន្ដា
 
 ## What's inside
 
-- **Storefront**: homepage, a Collections page (`/collections`) listing all jewelry with search, category and metal filters and a weight sort, product pages with a photo gallery, About and Contact. There are no separate pages per collection; a collection link opens the Collections page filtered to it. English and Khmer. Products show their weight; prices are not shown.
+- **Storefront**: homepage, a Collections page (`/collections`) listing all jewelry with search, collection and metal filters and a weight sort, product pages with a photo gallery, About and Contact. Each product belongs to one collection (Necklaces, Bracelets & Bangles, Rings, Earrings); the homepage shows a card per collection, which opens the Collections page filtered to it. English and Khmer. Products show their weight; prices are not shown.
 - **Gold price bar**: a slim scrolling bar above the header shows the buy/sell prices the owner enters under **Gold prices** in the dashboard, with the time they were saved. Prices are never fetched or invented; with none entered it asks visitors to contact the shop. It pauses on hover and stops for visitors who prefer reduced motion.
 - **Shop map**: the homepage Visit section shows an embedded Google Map of the shop (Google's free embed, no API key) when **Store settings → Map link** holds a Google Maps share link. On save the dashboard reads the shop's pin from the link, following `maps.app.goo.gl` short links when the link changes; any other host is never fetched. Without a usable link the section shows the Visit photo instead.
-- **Owner dashboard** at `/admin`: products (photos, weight, metal type, publish/unpublish/archive, preview), collections, categories, homepage and About text, contact details and social links.
+- **Owner dashboard** at `/admin`: products (photos, weight, metal type, publish/unpublish/archive, preview), collections, homepage and About text, contact details and social links.
 - Changes made in the dashboard appear on the website immediately. No redeploy is needed.
 
 **Stack:** Next.js 15 (App Router, TypeScript), SQLite via better-sqlite3, sharp for image processing, Tailwind CSS 4.
@@ -18,7 +18,7 @@ Requires Node.js 20 or newer.
 
 ```bash
 npm install
-npm run setup          # creates the database, starter categories/collections and sample products
+npm run setup          # creates the database, starter collections and sample products
 npm run owner:create   # choose the owner's email and password
 npm run dev            # http://localhost:3000  ·  dashboard at http://localhost:3000/admin
 ```
@@ -32,7 +32,7 @@ Their photos are cropped from `cover.jpg`. Their names, descriptions and weights
 Remove them all at once from **Dashboard → Overview → Delete all sample products**.
 To keep one as a real product, edit it and untick **Sample product**.
 
-The starter categories and collections (Necklaces, Bridal, …) and the homepage/About text are ordinary content the owner can edit or delete.
+The starter collections (Necklaces, Bracelets & Bangles, Rings, Earrings) and the homepage/About text are ordinary content the owner can edit or delete.
 The Khmer wording was written for this project and should be reviewed by a native speaker.
 
 ## Logo
@@ -58,7 +58,8 @@ The owner enters a weight in any of these units, and switching units converts th
 
 The weight is stored in grams. Khmer visitors see Khmer units, e.g. `1 ដំឡឹង 2 ជី 5 ហ៊ុន`; English visitors see grams, e.g. `46.875 g`.
 The gold price bar follows the same rule: `ក្នុង 1 ជី` in Khmer, `per 3.75 g` in English.
-The Collections page can be sorted by weight. Prices are not shown anywhere. The database still has the old price columns, unused.
+The Collections page can be sorted by weight.
+In the code and database these collections are called *categories* (`categories` table, `?category=` links, `/admin/categories`). Prices are not shown anywhere. The database still has the old price columns, unused.
 
 ## Deploying
 

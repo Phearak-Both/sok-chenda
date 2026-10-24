@@ -1,20 +1,18 @@
 /**
- * Prepares the database: creates tables, starter categories and collections,
+ * Prepares the database: creates tables, the starter collections (Necklaces, Rings, …),
  * and (on a fresh install only) the sample products.
  *
  *   npm run setup                 # first-time setup with sample products
  *   npm run setup -- --no-samples # first-time setup without them
  */
 import { getDb, DATA_DIR } from "../src/lib/db";
-import { seedCollections, seedHomeImages, seedSampleProducts, seedStructure } from "../src/lib/seed";
+import { seedSampleProducts, seedStructure } from "../src/lib/seed";
 
 async function main() {
   const db = getDb();
   console.log(`Database ready in ${DATA_DIR}`);
 
   seedStructure();
-  await seedCollections();
-  await seedHomeImages();
 
   const productCount = (db.prepare("SELECT COUNT(*) AS n FROM products").get() as { n: number }).n;
   if (productCount === 0 && !process.argv.includes("--no-samples")) {

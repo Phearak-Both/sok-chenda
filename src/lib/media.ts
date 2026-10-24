@@ -81,7 +81,6 @@ export function deleteUnusedMedia(ids: string[]) {
     if (!MEDIA_ID_PATTERN.test(id)) continue;
     const used =
       db.prepare("SELECT 1 FROM product_images WHERE media_id = ? LIMIT 1").get(id) ||
-      db.prepare("SELECT 1 FROM collections WHERE image_id = ? LIMIT 1").get(id) ||
       settingsJson.includes(id);
     if (used) continue;
     db.prepare("DELETE FROM media WHERE id = ?").run(id);
@@ -95,8 +94,7 @@ export function cleanupOrphanMedia(olderThanHours = 24) {
     .prepare(
       `SELECT id FROM media m
        WHERE m.created_at < datetime('now', ?)
-         AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.media_id = m.id)
-         AND NOT EXISTS (SELECT 1 FROM collections c WHERE c.image_id = m.id)`,
+         AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.media_id = m.id)`,
     )
     .all(`-${olderThanHours} hours`) as { id: string }[];
   deleteUnusedMedia(rows.map((r) => r.id));

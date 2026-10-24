@@ -3,7 +3,6 @@ import { rowToMedia } from "./media";
 import { isMetalType, type MetalFilter } from "./metal";
 import type {
   Category,
-  Collection,
   Media,
   Product,
   ProductStatus,
@@ -28,18 +27,6 @@ type ProductRow = {
   updated_at: string;
 };
 
-type CollectionRow = {
-  id: number;
-  slug: string;
-  name_en: string;
-  name_km: string;
-  description_en: string;
-  description_km: string;
-  image_id: string | null;
-  is_published: number;
-  sort: number;
-};
-
 function hydrateProducts(rows: ProductRow[]): Product[] {
   if (rows.length === 0) return [];
   const db = getDb();
@@ -52,21 +39,12 @@ function hydrateProducts(rows: ProductRow[]): Product[] {
        WHERE pi.product_id IN (${marks}) ORDER BY pi.position`,
     )
     .all(...ids) as { product_id: number; id: string; width: number; height: number; sizes: string }[];
-  const collectionRows = db
-    .prepare(`SELECT product_id, collection_id FROM product_collections WHERE product_id IN (${marks})`)
-    .all(...ids) as { product_id: number; collection_id: number }[];
 
   const images = new Map<number, Media[]>();
   for (const r of imageRows) {
     const list = images.get(r.product_id) ?? [];
     list.push(rowToMedia(r));
     images.set(r.product_id, list);
-  }
-  const collections = new Map<number, number[]>();
-  for (const r of collectionRows) {
-    const list = collections.get(r.product_id) ?? [];
-    list.push(r.collection_id);
-    collections.set(r.product_id, list);
   }
 
   return rows.map((r) => ({
@@ -83,7 +61,6 @@ function hydrateProducts(rows: ProductRow[]): Product[] {
     isSample: !!r.is_sample,
     sort: r.sort,
     images: images.get(r.id) ?? [],
-    collectionIds: collections.get(r.id) ?? [],
     updatedAt: r.updated_at,
   }));
 }
@@ -95,7 +72,6 @@ export type ProductQuery = {
   status?: ProductStatus | "public" | "active" | "all";
   q?: string;
   categoryId?: number;
-  collectionId?: number;
   metal?: MetalFilter;
   featured?: boolean;
   sort?: ProductSort;
@@ -131,10 +107,6 @@ export function listProducts(query: ProductQuery = {}): { items: Product[]; tota
   if (query.categoryId) {
     where.push("p.category_id = ?");
     params.push(query.categoryId);
-  }
-  if (query.collectionId) {
-    where.push("EXISTS (SELECT 1 FROM product_collections pc WHERE pc.product_id = p.id AND pc.collection_id = ?)");
-    params.push(query.collectionId);
   }
   if (query.metal === "platinum") where.push("p.metal_type LIKE 'platinum\\_%' ESCAPE '\\'");
   else if (query.metal) {
@@ -226,47 +198,6 @@ export function listCategories(): (Category & { productCount: number; cover: Med
   });
 }
 
-// ---------- Collections ----------
-
-function toCollection(r: CollectionRow): Collection {
-  const media = r.image_id
-    ? (getDb().prepare("SELECT id, width, height, sizes FROM media WHERE id = ?").get(r.image_id) as
-        | { id: string; width: number; height: number; sizes: string }
-        | undefined)
-    : undefined;
-  return {
-    id: r.id,
-    slug: r.slug,
-    name: { en: r.name_en, km: r.name_km },
-    description: { en: r.description_en, km: r.description_km },
-    image: media ? rowToMedia(media) : null,
-    isPublished: !!r.is_published,
-    sort: r.sort,
-  };
-}
-
-export function listCollections(opts: { publishedOnly?: boolean } = {}): (Collection & { productCount: number })[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT c.*, (SELECT COUNT(*) FROM product_collections pc JOIN products p ON p.id = pc.product_id
-                    WHERE pc.collection_id = c.id AND p.status = 'published') AS product_count
-       FROM collections c ${opts.publishedOnly ? "WHERE c.is_published = 1" : ""}
-       ORDER BY c.sort, c.id`,
-    )
-    .all() as (CollectionRow & { product_count: number })[];
-  return rows.map((r) => ({ ...toCollection(r), productCount: r.product_count }));
-}
-
-export function getCollection(id: number): Collection | null {
-  const row = getDb().prepare("SELECT * FROM collections WHERE id = ?").get(id) as CollectionRow | undefined;
-  return row ? toCollection(row) : null;
-}
-
-export function getCollectionBySlug(slug: string): Collection | null {
-  const row = getDb().prepare("SELECT * FROM collections WHERE slug = ?").get(slug) as CollectionRow | undefined;
-  return row ? toCollection(row) : null;
-}
-
 // ---------- Slugs ----------
 
 export function slugify(input: string) {
@@ -280,7 +211,7 @@ export function slugify(input: string) {
 }
 
 /** A URL-safe slug that is unique in `table`, ignoring the row with `exceptId`. */
-export function uniqueSlug(table: "products" | "collections" | "categories", source: string, exceptId?: number) {
+export function uniqueSlug(table: "products" | "categories", source: string, exceptId?: number) {
   const base = slugify(source) || `item-${Date.now().toString(36)}`;
   const exists = getDb().prepare(`SELECT 1 FROM ${table} WHERE slug = ? AND id != ?`);
   let slug = base;

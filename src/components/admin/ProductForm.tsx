@@ -14,11 +14,9 @@ type Option = { value: number; label: string };
 export function ProductForm({
   product,
   categories,
-  collections,
 }: {
   product: Product | null;
   categories: Option[];
-  collections: Option[];
 }) {
   const { t, locale } = useI18n();
   const p = t.admin.products;
@@ -99,22 +97,6 @@ export function ProductForm({
                 defaultValue={product?.categoryId ?? ""}
                 options={[{ value: "", label: p.noCategory }, ...categories]}
               />
-              <fieldset>
-                <legend className="field-label">{p.collections}</legend>
-                {collections.length === 0 ? (
-                  <p className="text-sm text-ink-faint">{p.noCollections}</p>
-                ) : (
-                  collections.map((c) => (
-                    <Checkbox
-                      key={c.value}
-                      name="collection_ids"
-                      value={String(c.value)}
-                      label={c.label}
-                      defaultChecked={product?.collectionIds.includes(c.value)}
-                    />
-                  ))
-                )}
-              </fieldset>
               <TextField
                 name="slug"
                 label={t.admin.common.slug}

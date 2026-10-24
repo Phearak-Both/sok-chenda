@@ -10,7 +10,7 @@ import { ImageField } from "./images";
 type Props = {
   home: HomeSettings;
   about: AboutSettings;
-  images: { hero: Media | null; story: Media | null; about: Media | null };
+  images: { hero: Media | null; about: Media | null };
 };
 
 export function ContentForm({ home, about, images }: Props) {
@@ -44,13 +44,6 @@ export function ContentForm({ home, about, images }: Props) {
             </Section>
 
             <Section title={c.story}>
-              <ImageField
-                name="story_image"
-                label={c.storyImage}
-                initial={images.story}
-                fallback="/brand/cover-960.webp"
-                fallbackNote={c.defaultImage}
-              />
               <BilingualField name="story_title" label={c.sectionTitle} defaultValue={home.story.title} error={err.story_title} maxLength={160} />
               <BilingualField name="story_body" label={c.sectionBody} defaultValue={home.story.body} multiline rows={3} maxLength={1500} />
             </Section>

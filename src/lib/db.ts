@@ -121,6 +121,17 @@ const MIGRATIONS: string[] = [
   `
   UPDATE products SET metal_type = NULL WHERE metal_type = 'platinum_7_5';
   `,
+  // Collections (Bridal, …) were removed; products are grouped by category only, which the
+  // site calls "collections". Their photos become unreferenced and are cleaned up as orphans.
+  `
+  DROP TABLE product_collections;
+  DROP TABLE collections;
+  `,
+  // The Visit banner no longer has a photo (the map, when set, sits beside the text instead).
+  // Its old photo becomes unreferenced and is cleaned up as an orphan.
+  `
+  UPDATE settings SET value = json_remove(value, '$.story.imageId') WHERE key = 'home' AND json_valid(value);
+  `,
 ];
 
 function migrate(db: Database.Database) {

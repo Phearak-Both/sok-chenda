@@ -21,7 +21,7 @@ export default async function ContentPage() {
       <ContentForm
         home={home}
         about={about}
-        images={{ hero: getMedia(home.hero.imageId), story: getMedia(home.story.imageId), about: getMedia(about.imageId) }}
+        images={{ hero: getMedia(home.hero.imageId), about: getMedia(about.imageId) }}
       />
     </div>
   );
