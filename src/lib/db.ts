@@ -132,23 +132,19 @@ const MIGRATIONS: string[] = [
   `
   UPDATE settings SET value = json_remove(value, '$.story.imageId') WHERE key = 'home' AND json_valid(value);
   `,
-  // Telegram bot: an owner links their Telegram account from the dashboard with a one-time code,
-  // then updates the gold prices step by step in the chat (see lib/telegram.ts).
+  // A Telegram bot for the gold prices was added here and later removed. Both steps stay so the
+  // migration numbers match databases that already ran them; the next step undoes this one.
   `
   ALTER TABLE owners ADD COLUMN telegram_user_id INTEGER;
   CREATE UNIQUE INDEX owners_telegram ON owners(telegram_user_id) WHERE telegram_user_id IS NOT NULL;
-  CREATE TABLE telegram_links (
-    code_hash TEXT PRIMARY KEY,
-    owner_id INTEGER NOT NULL REFERENCES owners(id) ON DELETE CASCADE,
-    expires_at INTEGER NOT NULL
-  );
-  CREATE TABLE telegram_state (
-    chat_id INTEGER PRIMARY KEY,
-    step TEXT NOT NULL,
-    metal TEXT,
-    draft TEXT NOT NULL,
-    updated_at INTEGER NOT NULL
-  );
+  CREATE TABLE telegram_links (code_hash TEXT PRIMARY KEY, owner_id INTEGER NOT NULL, expires_at INTEGER NOT NULL);
+  CREATE TABLE telegram_state (chat_id INTEGER PRIMARY KEY, step TEXT NOT NULL, metal TEXT, draft TEXT NOT NULL, updated_at INTEGER NOT NULL);
+  `,
+  `
+  DROP TABLE telegram_state;
+  DROP TABLE telegram_links;
+  DROP INDEX owners_telegram;
+  ALTER TABLE owners DROP COLUMN telegram_user_id;
   `,
 ];
 

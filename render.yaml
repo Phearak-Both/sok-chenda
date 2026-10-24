@@ -3,8 +3,6 @@
 # The free plan has no disk, so the database and photos are rebuilt from scratch on every
 # start (after each deploy, and after the service wakes from sleep). Each start creates the
 # starter collections, the sample products and, if OWNER_EMAIL is set, the owner login.
-# If TELEGRAM_BOT_TOKEN is set, the server points the Telegram bot at the site when it starts
-# (needs SITE_URL); a failure there is logged but does not stop the site.
 # Anything entered in the dashboard is lost at the next restart.
 #
 # Going live: set `plan: starter`, add
@@ -16,10 +14,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm ci && npm run build
-    startCommand: >-
-      npm run setup
-      && { [ -z "$OWNER_EMAIL" ] || npm run owner:create; }
-      && npm start
+    startCommand: npm run setup && { [ -z "$OWNER_EMAIL" ] || npm run owner:create; } && npm start
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION
@@ -29,12 +24,4 @@ services:
       - key: OWNER_EMAIL
         sync: false
       - key: OWNER_PASSWORD
-        sync: false
-      # Optional Telegram bot for the gold prices (README → Telegram bot).
-      - key: TELEGRAM_BOT_TOKEN
-        sync: false
-      - key: TELEGRAM_BOT_USERNAME
-        sync: false
-      # 16+ letters, digits, _ or - (Telegram allows nothing else).
-      - key: TELEGRAM_WEBHOOK_SECRET
         sync: false

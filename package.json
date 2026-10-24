@@ -12,8 +12,7 @@
     "lint": "tsc --noEmit",
     "setup": "tsx scripts/setup.ts",
     "seed:samples": "tsx scripts/seed-samples.ts",
-    "owner:create": "tsx scripts/create-owner.ts",
-    "telegram:webhook": "tsx scripts/telegram-webhook.ts"
+    "owner:create": "tsx scripts/create-owner.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
