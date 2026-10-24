@@ -2,6 +2,9 @@
   "name": "sok-chenda",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,6 +20,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "sharp": "^0.35.5",
+    "tsx": "4.20",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -26,7 +30,6 @@
     "@types/react": "19.1",
     "@types/react-dom": "19.1",
     "tailwindcss": "4.1",
-    "tsx": "4.20",
     "typescript": "^5.9.3"
   },
   "overrides": {
