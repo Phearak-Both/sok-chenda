@@ -101,6 +101,19 @@ Serve the site over HTTPS (any reverse proxy or the host's built-in TLS). Login 
 
 Then add your own domain under **Settings → Custom Domains** and update `SITE_URL`. Render takes daily snapshots of the disk.
 
+## Telegram bot
+
+The owner can update the gold prices from Telegram: tap **💰 Update gold prices**, pick a metal, send the sell and then the buy price (or tap **Keep**), and tap **✅ Publish**. The website's price bar updates straight away. The bot answers in Khmer when the owner's Telegram is in Khmer.
+
+Setting it up:
+
+1. In Telegram, message **@BotFather** → `/newbot` → choose a name and a username ending in `bot`. BotFather replies with a **token**.
+2. Set the server's variables: `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_BOT_USERNAME` (the bot's username, without `@`) and `TELEGRAM_WEBHOOK_SECRET` (make up a random string of 16+ letters and digits). `SITE_URL` must be the site's `https://` address.
+3. Run `npm run telegram:webhook` once (Render's start command does it automatically when the token is set).
+4. Dashboard → **Account → Connect Telegram**. Telegram opens; tap **Start**. Each owner connects their own Telegram account; messages from anyone else are refused.
+
+The bot needs the site to be reachable over HTTPS. To try it on your computer, run the site, start `npx cloudflared tunnel --url http://localhost:3000`, and use the tunnel's address as `SITE_URL` when running `npm run telegram:webhook`.
+
 ## Security notes
 
 - The owner password is hashed with scrypt. Sessions are random tokens stored hashed, in httpOnly cookies that expire after 30 days.

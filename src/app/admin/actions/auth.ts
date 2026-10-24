@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDictionary } from "@/i18n/server";
 import {
@@ -14,6 +15,7 @@ import {
 import { getDb } from "@/lib/db";
 import { str, type FormState } from "@/lib/form";
 import { hashPassword, MIN_PASSWORD_LENGTH, verifyPassword } from "@/lib/password";
+import { createLinkCode, telegramConfigured, telegramLinkUrl, unlinkTelegram } from "@/lib/telegram";
 import { fmt } from "@/i18n/format";
 
 // Compared against when the email is unknown, so response time doesn't reveal which emails exist.
@@ -69,4 +71,19 @@ export async function changePassword(_prev: FormState, form: FormData): Promise<
   db.prepare("DELETE FROM sessions WHERE owner_id = ?").run(owner.id);
   await createSession(owner.id);
   return { ok: true, message: t.admin.account.changed, at: Date.now() };
+}
+
+// ---------- Telegram bot ----------
+
+/** Opens the bot with a one-time code that links this Telegram account to the signed-in owner. */
+export async function connectTelegram() {
+  const owner = await requireOwner();
+  if (!telegramConfigured()) redirect("/admin/account");
+  redirect(telegramLinkUrl(createLinkCode(owner.id)));
+}
+
+export async function disconnectTelegram() {
+  const owner = await requireOwner();
+  unlinkTelegram(owner.id);
+  revalidatePath("/admin/account");
 }

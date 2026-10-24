@@ -1,10 +1,11 @@
-import { logout } from "@/app/admin/actions/auth";
+import { connectTelegram, disconnectTelegram, logout } from "@/app/admin/actions/auth";
 import { PageHeader } from "@/components/admin/AdminShell";
 import { PasswordForm } from "@/components/admin/PasswordForm";
-import { LogoutIcon } from "@/components/icons";
+import { LogoutIcon, TelegramIcon } from "@/components/icons";
 import { fmt } from "@/i18n/format";
 import { getDictionary } from "@/i18n/server";
 import { requireOwner } from "@/lib/auth";
+import { isTelegramLinked, telegramConfigured } from "@/lib/telegram";
 
 export default async function AccountPage() {
   const owner = await requireOwner();
@@ -17,6 +18,26 @@ export default async function AccountPage() {
       <section className="card p-5 md:p-6">
         <h2 className="mb-4 font-semibold">{a.changePassword}</h2>
         <PasswordForm />
+      </section>
+      <section className="card mt-6 p-5 md:p-6">
+        <h2 className="mb-2 font-semibold">{a.telegram}</h2>
+        {!telegramConfigured() ? (
+          <p className="text-sm text-ink-soft">{a.telegramNotSetUp}</p>
+        ) : isTelegramLinked(owner.id) ? (
+          <form action={disconnectTelegram} className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-ink-soft">{a.telegramConnected}</p>
+            <button type="submit" className="abtn abtn-sm">
+              {a.telegramDisconnect}
+            </button>
+          </form>
+        ) : (
+          <form action={connectTelegram}>
+            <p className="mb-4 text-sm text-ink-soft">{a.telegramIntro}</p>
+            <button type="submit" className="abtn abtn-primary">
+              <TelegramIcon size={16} /> {a.telegramConnect}
+            </button>
+          </form>
+        )}
       </section>
       <form action={logout} className="mt-6">
         <button type="submit" className="abtn">
