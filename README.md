@@ -63,7 +63,7 @@ In the code and database these collections are called *categories* (`categories`
 
 ## Deploying
 
-The site needs a server with a **persistent disk** for the `data/` folder: a VPS, Railway, Render or Fly.io with a volume.
+The site needs a server with a **persistent disk** for the `data/` folder: a VPS, Render or Fly.io with a disk.
 Serverless hosting such as Vercel will not keep the database or uploaded photos.
 
 ```bash
@@ -83,6 +83,36 @@ Environment variables (see `.env.example`):
 
 Serve the site over HTTPS (any reverse proxy or the host's built-in TLS). Login cookies are marked secure when the site runs over HTTPS.
 **Back up the `DATA_DIR` folder regularly.** It contains all products, settings and photos.
+
+### Render
+
+`render.yaml` is set up as a **free preview** for checking the design. Render's free plan has no disk, so every start (after a deploy, or when the site wakes from sleep) builds a fresh database with the starter collections and the sample products, and creates the owner login from `OWNER_EMAIL` / `OWNER_PASSWORD`. **Anything entered in the dashboard is lost at the next restart.** The site sleeps after about 15 minutes without visitors; the next visit takes about a minute.
+
+1. Render → **New → Blueprint** → connect this repository and pick the branch to preview. Render reads `render.yaml`.
+2. Fill in the variables Render asks for:
+   - `SITE_URL`: the site's address, e.g. `https://sok-chenda.onrender.com` (you can set it after the first deploy shows the address).
+   - `OWNER_EMAIL` and `OWNER_PASSWORD` (at least the minimum length): the dashboard login.
+3. Open the site, and the dashboard at `/admin`.
+
+**Going live** needs a disk, which needs a paid instance (Starter or above). In `render.yaml`:
+- set `plan: starter`;
+- add `disk: { name: data, mountPath: /data, sizeGB: 1 }` and the variable `DATA_DIR=/data`;
+- change the setup step to `npm run setup -- --no-samples`.
+
+Then add your own domain under **Settings → Custom Domains** and update `SITE_URL`. Render takes daily snapshots of the disk.
+
+## Telegram bot
+
+The owner can update the gold prices from Telegram: tap **💰 Update gold prices**, pick a metal, send the sell and then the buy price (or tap **Keep**), and tap **✅ Publish**. The website's price bar updates straight away. The bot answers in Khmer when the owner's Telegram is in Khmer.
+
+Setting it up:
+
+1. In Telegram, message **@BotFather** → `/newbot` → choose a name and a username ending in `bot`. BotFather replies with a **token**.
+2. Set the server's variables: `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_BOT_USERNAME` (the bot's username, without `@`) and `TELEGRAM_WEBHOOK_SECRET` (make up a random string of 16+ letters and digits). `SITE_URL` must be the site's `https://` address.
+3. Run `npm run telegram:webhook` once (Render's start command does it automatically when the token is set).
+4. Dashboard → **Account → Connect Telegram**. Telegram opens; tap **Start**. Each owner connects their own Telegram account; messages from anyone else are refused.
+
+The bot needs the site to be reachable over HTTPS. To try it on your computer, run the site, start `npx cloudflared tunnel --url http://localhost:3000`, and use the tunnel's address as `SITE_URL` when running `npm run telegram:webhook`.
 
 ## Security notes
 

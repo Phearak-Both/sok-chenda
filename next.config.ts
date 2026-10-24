@@ -16,9 +16,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   async redirects() {
     return [
-      // The shop moved to /collections, and collections became a filter on it.
+      // The shop moved to /collections; the old per-collection pages no longer exist.
       { source: "/shop", destination: "/collections", permanent: true },
-      { source: "/collections/:slug", destination: "/collections?collection=:slug", permanent: true },
+      { source: "/collections/:slug", destination: "/collections", permanent: true },
     ];
   },
   async headers() {
