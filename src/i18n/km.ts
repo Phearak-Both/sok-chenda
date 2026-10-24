@@ -336,6 +336,13 @@ const km: Dictionary = {
       telegramConnected: "គណនី Telegram របស់អ្នកត្រូវបានភ្ជាប់។",
       telegramDisconnect: "ផ្ដាច់",
       telegramNotSetUp: "បូត Telegram មិនទាន់បានរៀបចំនៅលើម៉ាស៊ីនមេនេះនៅឡើយទេ។",
+      telegramStepOpen: "1. បើកបូត ហើយចុច Start (ឬ Restart)។",
+      telegramOpen: "បើកបូត",
+      telegramStepSend: "2. ប្រសិនបើបូតមិនឆ្លើយ «បានភ្ជាប់ ✓» សូមផ្ញើសារនេះទៅបូត។ ប្រើបានតែម្ដង ក្នុងរយៈពេល 10 នាទី។",
+      telegramCopy: "ចម្លង",
+      telegramCopied: "បានចម្លង",
+      telegramStepDone: "3. នៅពេលបូតឆ្លើយ «បានភ្ជាប់ ✓» សូមផ្ទុកទំព័រនេះឡើងវិញ។",
+      telegramReload: "ផ្ទុកឡើងវិញ",
     },
   },
   telegram: {

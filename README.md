@@ -109,7 +109,7 @@ Setting it up:
 
 1. In Telegram, message **@BotFather** → `/newbot` → choose a name and a username ending in `bot`. BotFather replies with a **token**.
 2. Set the server's variables: `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_BOT_USERNAME` (the bot's username, without `@`) and `TELEGRAM_WEBHOOK_SECRET` (make up a random string of 16+ letters and digits). `SITE_URL` must be the site's `https://` address.
-3. Run `npm run telegram:webhook` once (Render's start command does it automatically when the token is set).
+3. Restart the site. On start it points the bot at `SITE_URL` and logs `Telegram webhook set to …` (or the reason it couldn't). `npm run telegram:webhook` does the same by hand.
 4. Dashboard → **Account → Connect Telegram**. Telegram opens; tap **Start**. Each owner connects their own Telegram account; messages from anyone else are refused.
 
 The bot needs the site to be reachable over HTTPS. To try it on your computer, run the site, start `npx cloudflared tunnel --url http://localhost:3000`, and use the tunnel's address as `SITE_URL` when running `npm run telegram:webhook`.
