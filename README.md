@@ -103,9 +103,9 @@ Then add your own domain under **Settings → Custom Domains** and update `SITE_
 
 ## Telegram bot
 
-The owner updates the gold prices in a form inside Telegram. **💰 ប្ដូរតម្លៃមាស** (the button under the message box) or the bot's menu button **💰 តម្លៃមាស** opens it: every metal's sell and buy price on one screen, changed fields highlighted with the old price beside them, and Telegram's own **ផ្សព្វផ្សាយ** (Publish) button at the bottom. The website's price bar updates straight away and the bot sends a confirmation. The bot and the form are in Khmer only and follow the Telegram colour theme.
+The owner updates the gold prices in a form inside Telegram. **💰 ប្ដូរតម្លៃមាស** (the button in the bot's reply) or the bot's menu button **💰 តម្លៃមាស** beside the message box opens it: every metal's sell and buy price on one screen, changed fields highlighted with the old price beside them, and Telegram's own **ផ្សព្វផ្សាយ** (Publish) button at the bottom. The website's price bar updates straight away and the bot sends a confirmation. The bot and the form are in Khmer only and follow the Telegram colour theme.
 
-The form (`/telegram/prices`) only works when opened from Telegram; the server checks Telegram's signature and the owner's ID before saving. It needs an `https://` `SITE_URL`. The bot does nothing else: any message gets the button that opens the form.
+The form (`/telegram/prices`) only works when opened from Telegram; the server checks Telegram's signature and the owner's ID before saving. It needs an `https://` `SITE_URL`. The bot does nothing else: any message gets a button that opens the form. (Telegram doesn't sign a form opened from a button under the message box, so the bot doesn't use one; `/start` removes the one older versions added.)
 
 Setting it up:
 

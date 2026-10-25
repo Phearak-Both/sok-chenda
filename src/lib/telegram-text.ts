@@ -3,7 +3,8 @@
  * owner only and are in Khmer only. Bot messages use Telegram HTML: only <b> is used.
  */
 export const telegramText = {
-  welcome: "សួស្ដី! ចុច <b>{button}</b> ខាងក្រោម ដើម្បីប្ដូរតម្លៃមាស។",
+  hello: "សួស្ដី!",
+  welcome: "ចុច <b>{button}</b> ខាងក្រោម ឬប៊ូតុង <b>{menu}</b> ក្បែរប្រអប់សារ ដើម្បីប្ដូរតម្លៃមាស។",
   notAllowed:
     "បូតនេះសម្រាប់ម្ចាស់ហាង សុខ ចិន្ដា។\nលេខសម្គាល់ Telegram របស់អ្នកគឺ <b>{id}</b>។ ដើម្បីប្រើបាន សូមបញ្ចូលលេខនេះក្នុង TELEGRAM_OWNER_IDS នៃការកំណត់គេហទំព័រ។",
   noForm: "ទម្រង់តម្លៃមិនទាន់ដំណើរការទេ៖ SITE_URL ក្នុងការកំណត់គេហទំព័រត្រូវជាអាសយដ្ឋាន https://។",
@@ -25,6 +26,8 @@ export const telegramText = {
     failed: "មិនអាចផ្សព្វផ្សាយបានទេ។ សូមព្យាយាមម្ដងទៀត។",
     notAllowed: "មានតែម្ចាស់ហាងប៉ុណ្ណោះដែលអាចប្ដូរតម្លៃនៅទីនេះ។ លេខសម្គាល់ Telegram របស់អ្នកគឺ {id}។",
     outsideTelegram: "សូមបើកទម្រង់នេះពីបូត សុខ ចិន្ដា ក្នុង Telegram។",
+    // Shown when opened from the old button under the message box, which Telegram gives no sign-in.
+    oldButton: "ប៊ូតុងនេះលែងប្រើបានហើយ។ សូមបិទទម្រង់នេះ ផ្ញើ /start ទៅបូត រួចចុច «💰 ប្ដូរតម្លៃមាស» ក្នុងសាររបស់បូត ឬប៊ូតុង «💰 តម្លៃមាស» ក្បែរប្រអប់សារ។",
     lastUpdated: "ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ {date}",
   },
 };
