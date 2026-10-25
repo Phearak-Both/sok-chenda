@@ -1,21 +1,18 @@
 import { revalidatePath } from "next/cache";
-import en from "@/i18n/en";
 import { fmt } from "@/i18n/format";
-import km from "@/i18n/km";
 import { METAL_TYPES } from "@/lib/metal";
 import { parsePrice, type PriceSettings } from "@/lib/prices";
 import { getSetting } from "@/lib/settings";
-import { isTelegramOwner, localeOf, priceRowsText, publishPrices } from "@/lib/telegram";
+import { isTelegramOwner, priceRowsText, publishPrices } from "@/lib/telegram";
 import { tg } from "@/lib/telegram-api";
 import { verifyInitData } from "@/lib/telegram-init-data";
+import { telegramText } from "@/lib/telegram-text";
 
 export const dynamic = "force-dynamic";
 
 type Body = {
   initData?: unknown;
   check?: unknown;
-  /** The language chosen in the form, for the confirmation message. */
-  locale?: unknown;
   prices?: Record<string, { sell?: unknown; buy?: unknown } | undefined>;
 };
 
@@ -48,11 +45,9 @@ export async function POST(req: Request) {
   revalidatePath("/", "layout");
 
   // Confirm in the chat too, so there's a record of each update.
-  const locale = body.locale === "en" || body.locale === "km" ? body.locale : localeOf(user.languageCode);
-  const t = (locale === "km" ? km : en).telegram;
   await tg("sendMessage", {
     chat_id: user.id,
-    text: fmt(t.published, { rows: priceRowsText(saved, locale) }),
+    text: fmt(telegramText.published, { rows: priceRowsText(saved) }),
     parse_mode: "HTML",
   }).catch((err) => console.error("Telegram confirmation failed", err));
 

@@ -8,7 +8,7 @@ const INIT_DATA_MAX_AGE_S = 24 * 60 * 60;
  * bot token, so a valid hash proves which Telegram user opened the form.
  * https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
  */
-export function verifyInitData(initData: string): { id: number; languageCode?: string } | null {
+export function verifyInitData(initData: string): { id: number } | null {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token || !initData || initData.length > 4096) return null;
   const params = new URLSearchParams(initData);
@@ -25,9 +25,9 @@ export function verifyInitData(initData: string): { id: number; languageCode?: s
   const authDate = Number(params.get("auth_date"));
   if (!authDate || Date.now() / 1000 - authDate > INIT_DATA_MAX_AGE_S) return null;
   try {
-    const user = JSON.parse(params.get("user") ?? "") as { id?: unknown; language_code?: unknown };
+    const user = JSON.parse(params.get("user") ?? "") as { id?: unknown };
     if (typeof user.id !== "number") return null;
-    return { id: user.id, languageCode: typeof user.language_code === "string" ? user.language_code : undefined };
+    return { id: user.id };
   } catch {
     return null;
   }

@@ -1,5 +1,5 @@
 /**
- * Points the Telegram bot at this site and sets its command list. Safe to run again.
+ * Points the Telegram bot at this site and its menu button at the price form. Safe to run again.
  * The server also does this by itself on every start (src/instrumentation.ts).
  *
  *   npm run telegram:webhook
