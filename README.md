@@ -101,6 +101,21 @@ Serve the site over HTTPS (any reverse proxy or the host's built-in TLS). Login 
 
 Then add your own domain under **Settings → Custom Domains** and update `SITE_URL`. Render takes daily snapshots of the disk.
 
+## Telegram bot
+
+The owner can update the gold prices from Telegram: tap **💰 Update gold prices**, pick a metal, send the sell and then the buy price (or tap **Keep**), and tap **✅ Publish**. The website's price bar updates straight away. The bot answers in Khmer when the owner's Telegram is in Khmer.
+
+Setting it up:
+
+1. In Telegram, message **@BotFather** → `/newbot` → choose a name and a username ending in `bot`. BotFather replies with a **token**.
+2. In the server's settings (Render → Environment): `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_WEBHOOK_SECRET` (make up 16+ letters and digits) and `SITE_URL` (the site's `https://` address, no trailing slash). After the next start the log shows `Telegram webhook set to …`, or why it couldn't.
+3. Message the bot. It replies with your **Telegram ID**. Add it as `TELEGRAM_OWNER_IDS` (several people: comma-separated, e.g. `123456789,987654321`).
+4. Message the bot again and tap **💰 Update gold prices**.
+
+Only the IDs in `TELEGRAM_OWNER_IDS` can change prices. `npm run telegram:webhook` re-registers the bot by hand.
+
+On Render's free plan the database is rebuilt whenever the site sleeps or redeploys, so published prices are lost then; the bot itself keeps working. Use a paid plan with a disk to keep prices.
+
 ## Security notes
 
 - The owner password is hashed with scrypt. Sessions are random tokens stored hashed, in httpOnly cookies that expire after 30 days.

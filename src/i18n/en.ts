@@ -330,6 +330,23 @@ const en = {
       changed: "Password changed. Other devices have been signed out.",
     },
   },
+  /** Messages from the Telegram bot. Telegram HTML: only <b> is used. */
+  telegram: {
+    welcome: "Hello! Tap “Update gold prices” below whenever your prices change.",
+    notAllowed: "This bot is for the Sok Chenda shop owner.\nYour Telegram ID is <b>{id}</b>. To get access, add it to TELEGRAM_OWNER_IDS in the site's settings.",
+    updateButton: "💰 Update gold prices",
+    menu: "<b>Gold prices</b> (per {unit})\n\n{rows}\n\nTap a metal to change it, then <b>Publish</b>.",
+    row: "{mark}<b>{metal}</b>: sell {sell} · buy {buy}",
+    askSell: "<b>{metal}</b>\nSend the <b>sell</b> price. Now: {current}",
+    askBuy: "<b>{metal}</b>\nSend the <b>buy</b> price. Now: {current}",
+    keep: "Keep {value}",
+    back: "← Back",
+    invalid: "Please send a number, e.g. 488 or 307.5.",
+    publish: "✅ Publish",
+    cancel: "✖ Cancel",
+    published: "✅ Published. The website now shows:\n\n{rows}",
+    cancelled: "Cancelled. Nothing was changed.",
+  },
 };
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> };
