@@ -35,7 +35,17 @@ export async function registerWebhook() {
     secret_token: secret,
     allowed_updates: ["message", "callback_query"],
   });
+  // The "menu" button beside the message box opens the price form (Mini App).
+  await tg("setChatMenuButton", {
+    menu_button: { type: "web_app", text: "💰 Prices · តម្លៃ", web_app: { url: miniAppUrl()! } },
+  });
   await tg("setMyCommands", { commands: [{ command: "prices", description: "Update gold prices" }] });
   await tg("setMyCommands", { commands: [{ command: "prices", description: "ធ្វើបច្ចុប្បន្នភាពតម្លៃមាស" }], language_code: "km" });
   return `${site}/api/telegram`;
+}
+
+/** The price form opened inside Telegram (app/telegram/prices), or null without an https SITE_URL. */
+export function miniAppUrl() {
+  const site = (process.env.SITE_URL ?? "").replace(/\/+$/, "");
+  return site.startsWith("https://") ? `${site}/telegram/prices` : null;
 }

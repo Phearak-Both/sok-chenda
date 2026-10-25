@@ -346,6 +346,23 @@ const en = {
     cancel: "✖ Cancel",
     published: "✅ Published. The website now shows:\n\n{rows}",
     cancelled: "Cancelled. Nothing was changed.",
+    openForm: "📝 Open the price form",
+    app: {
+      title: "Gold prices",
+      perUnit: "per {unit}",
+      sell: "Sell",
+      buy: "Buy",
+      publish: "Publish",
+      publishing: "Publishing…",
+      published: "Published ✓",
+      changed: "{n} changed",
+      undo: "Undo changes",
+      invalid: "Check the highlighted prices: numbers only, e.g. 488 or 307.5.",
+      failed: "Couldn't publish. Please try again.",
+      notAllowed: "Only the shop owner can change prices here. Your Telegram ID is {id}.",
+      outsideTelegram: "Open this form from the Sok Chenda bot in Telegram.",
+      lastUpdated: "Last updated {date}",
+    },
   },
 };
 
