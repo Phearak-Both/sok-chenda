@@ -14,11 +14,13 @@ export type PriceFormMetal = {
 };
 
 type Field = "sell" | "buy";
-type Status = "loading" | "ready" | "outside" | "notAllowed" | "saving" | "saved";
+type Status = "loading" | "ready" | "outside" | "oldButton" | "notAllowed" | "saving" | "saved";
 
 /** The parts of Telegram's Mini App API this form uses (https://core.telegram.org/bots/webapps). */
 type WebApp = {
   initData: string;
+  /** "unknown" outside Telegram. */
+  platform: string;
   initDataUnsafe: { user?: { id: number } };
   ready(): void;
   expand(): void;
@@ -90,7 +92,8 @@ export function PriceForm({
   const init = useCallback(async () => {
     const app = telegram();
     if (!app?.initData) {
-      setStatus("outside");
+      // Inside Telegram but unsigned: opened from a button under the message box.
+      setStatus(app && app.platform !== "unknown" ? "oldButton" : "outside");
       return;
     }
     app.ready();
@@ -164,7 +167,13 @@ export function PriceForm({
   const symbol = currency === "KHR" ? "៛" : "$";
   const disabled = status !== "ready";
   const notice =
-    status === "outside" ? t.outsideTelegram : status === "notAllowed" ? fmt(t.notAllowed, { id: userId ?? "?" }) : message;
+    status === "outside"
+      ? t.outsideTelegram
+      : status === "oldButton"
+        ? t.oldButton
+        : status === "notAllowed"
+          ? fmt(t.notAllowed, { id: userId ?? "?" })
+          : message;
 
   return (
     <div
@@ -175,7 +184,7 @@ export function PriceForm({
         color: "var(--tg-theme-text-color, var(--color-ink))",
       }}
     >
-      <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => void init()} />
+      <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => void init()} onError={() => setStatus("outside")} />
 
       <header className="mb-4 px-1">
         <h1 className="text-xl font-semibold">{t.title}</h1>

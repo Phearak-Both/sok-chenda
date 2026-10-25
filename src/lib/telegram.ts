@@ -54,7 +54,7 @@ type Update = {
   callback_query?: { id: string; from: { id: number }; message?: { chat: { id: number; type: string } } };
 };
 
-/** Answers any message (or a tap on a button from an older version) with the button that opens the form. */
+/** Answers any message (or a tap on a button from an older version) with a button that opens the form. */
 export async function handleUpdate(update: Update, api: TelegramApi = tg) {
   const cb = update.callback_query;
   const chat = update.message?.chat ?? cb?.message?.chat;
@@ -62,6 +62,7 @@ export async function handleUpdate(update: Update, api: TelegramApi = tg) {
   if (!chat || !from || chat.type !== "private") return;
   if (cb) await api("answerCallbackQuery", { callback_query_id: cb.id }).catch(() => {});
 
+  const text = update.message?.text?.trim() ?? "";
   const send = (text: string, markup?: unknown) =>
     api("sendMessage", { chat_id: chat.id, text, parse_mode: "HTML", ...(markup ? { reply_markup: markup } : {}) });
   if (!isTelegramOwner(from.id)) {
@@ -73,9 +74,10 @@ export async function handleUpdate(update: Update, api: TelegramApi = tg) {
     await send(t.noForm);
     return;
   }
-  await send(fmt(t.welcome, { button: t.updateButton }), {
-    keyboard: [[{ text: t.updateButton, web_app: { url: formUrl } }]],
-    resize_keyboard: true,
-    is_persistent: true,
+  // Telegram signs the form only when it's opened from a button in a message or the menu button,
+  // not from a button under the message box, so "/start" also removes the one older versions added.
+  if (text === "/start" || text.startsWith("/start ")) await send(t.hello, { remove_keyboard: true });
+  await send(fmt(t.welcome, { button: t.updateButton, menu: t.menuButton }), {
+    inline_keyboard: [[{ text: t.updateButton, web_app: { url: formUrl } }]],
   });
 }
