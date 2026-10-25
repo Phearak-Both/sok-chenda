@@ -11,7 +11,13 @@ import { verifyInitData } from "@/lib/telegram-init-data";
 
 export const dynamic = "force-dynamic";
 
-type Body = { initData?: unknown; check?: unknown; prices?: Record<string, { sell?: unknown; buy?: unknown } | undefined> };
+type Body = {
+  initData?: unknown;
+  check?: unknown;
+  /** The language chosen in the form, for the confirmation message. */
+  locale?: unknown;
+  prices?: Record<string, { sell?: unknown; buy?: unknown } | undefined>;
+};
 
 /**
  * Saves the prices from the form opened inside Telegram (app/telegram/prices).
@@ -42,7 +48,7 @@ export async function POST(req: Request) {
   revalidatePath("/", "layout");
 
   // Confirm in the chat too, so there's a record of each update.
-  const locale = localeOf(user.languageCode);
+  const locale = body.locale === "en" || body.locale === "km" ? body.locale : localeOf(user.languageCode);
   const t = (locale === "km" ? km : en).telegram;
   await tg("sendMessage", {
     chat_id: user.id,
