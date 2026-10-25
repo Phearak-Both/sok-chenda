@@ -365,6 +365,7 @@ const km: Dictionary = {
       notAllowed: "មានតែម្ចាស់ហាងប៉ុណ្ណោះដែលអាចប្ដូរតម្លៃនៅទីនេះ។ លេខសម្គាល់ Telegram របស់អ្នកគឺ {id}។",
       outsideTelegram: "សូមបើកទម្រង់នេះពីបូត សុខ ចិន្ដា ក្នុង Telegram។",
       lastUpdated: "ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ {date}",
+      language: "ភាសា",
     },
   },
 };

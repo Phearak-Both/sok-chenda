@@ -42,6 +42,21 @@ type WebApp = {
 const telegram = () => (globalThis as { Telegram?: { WebApp?: WebApp } }).Telegram?.WebApp;
 const toInput = (n: number | null) => (n === null ? "" : String(n));
 
+/** The language picked with the switch, kept on this device; otherwise Telegram's language is used. */
+const LOCALE_KEY = "telegram-form-locale";
+const LOCALES: { value: Locale; label: string }[] = [
+  { value: "en", label: "EN" },
+  { value: "km", label: "ខ្មែរ" },
+];
+function savedLocale(): Locale | null {
+  try {
+    const v = localStorage.getItem(LOCALE_KEY);
+    return v === "en" || v === "km" ? v : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Price form that opens inside Telegram. It follows the user's Telegram theme (Telegram sets the
  * --tg-theme-* colours) and language, and publishes with Telegram's own main button.
@@ -98,7 +113,7 @@ export function PriceForm({
     app.ready();
     app.expand();
     const user = app.initDataUnsafe.user;
-    setLocale(user?.language_code?.startsWith("km") ? "km" : "en");
+    setLocale(savedLocale() ?? (user?.language_code?.startsWith("km") ? "km" : "en"));
     setUserId(user?.id ?? null);
     const res = await fetch("/api/telegram/app", {
       method: "POST",
@@ -123,7 +138,7 @@ export function PriceForm({
     const res = await fetch("/api/telegram/app", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ initData: app.initData, prices: values }),
+      body: JSON.stringify({ initData: app.initData, prices: values, locale }),
     }).catch(() => null);
     app.MainButton.hideProgress();
     if (!res?.ok) {
@@ -143,7 +158,7 @@ export function PriceForm({
     );
     app.HapticFeedback?.notificationOccurred("success");
     setTimeout(() => app.close(), 900);
-  }, [anyInvalid, metals, parsed, status, t, values]);
+  }, [anyInvalid, locale, metals, parsed, status, t, values]);
 
   // Keep Telegram's main button in step with the form. It holds one click handler at a time.
   const publishRef = useRef(publish);
@@ -165,6 +180,13 @@ export function PriceForm({
     return () => button.offClick(onClick);
   }, [status, t]);
 
+  const chooseLocale = (value: Locale) => {
+    setLocale(value);
+    try {
+      localStorage.setItem(LOCALE_KEY, value);
+    } catch {}
+  };
+
   const symbol = currency === "KHR" ? "៛" : "$";
   const disabled = status !== "ready";
   const notice =
@@ -181,12 +203,44 @@ export function PriceForm({
     >
       <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => void init()} />
 
-      <header className="mb-4 px-1">
-        <h1 className="text-xl font-semibold">{t.title}</h1>
-        <p className="text-sm" style={{ color: "var(--tg-theme-hint-color, var(--color-ink-faint))" }}>
-          {subtitle[locale]}
-          {updated && ` · ${fmt(t.lastUpdated, { date: updated[locale] })}`}
-        </p>
+      <header className="mb-4 flex items-start justify-between gap-3 px-1">
+        <div>
+          <h1 className="text-xl font-semibold">{t.title}</h1>
+          <p className="text-sm" style={{ color: "var(--tg-theme-hint-color, var(--color-ink-faint))" }}>
+            {subtitle[locale]}
+            {updated && ` · ${fmt(t.lastUpdated, { date: updated[locale] })}`}
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label={t.language}
+          className="flex shrink-0 rounded-full p-0.5 text-sm"
+          style={{ background: "var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, #fff))" }}
+        >
+          {LOCALES.map((o) => {
+            const active = locale === o.value;
+            return (
+              <button
+                key={o.value}
+                type="button"
+                lang={o.value}
+                aria-pressed={active}
+                onClick={() => chooseLocale(o.value)}
+                className="min-h-8 min-w-11 cursor-pointer rounded-full px-3 font-medium transition-colors"
+                style={
+                  active
+                    ? {
+                        background: "var(--tg-theme-button-color, var(--color-gold))",
+                        color: "var(--tg-theme-button-text-color, #fff)",
+                      }
+                    : { color: "var(--tg-theme-hint-color, var(--color-ink-faint))" }
+                }
+              >
+                {o.label}
+              </button>
+            );
+          })}
+        </div>
       </header>
 
       {notice && (

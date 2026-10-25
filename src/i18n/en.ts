@@ -364,6 +364,7 @@ const en = {
       notAllowed: "Only the shop owner can change prices here. Your Telegram ID is {id}.",
       outsideTelegram: "Open this form from the Sok Chenda bot in Telegram.",
       lastUpdated: "Last updated {date}",
+      language: "Language",
     },
   },
 };
