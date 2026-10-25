@@ -1,3 +1,5 @@
+import { telegramText } from "./telegram-text";
+
 /**
  * Telegram Bot API calls. Kept free of database imports so the server's start-up hook
  * (src/instrumentation.ts) can load it.
@@ -18,7 +20,7 @@ export async function tg(method: string, body: Record<string, unknown>) {
 export type TelegramApi = typeof tg;
 
 /**
- * Points the bot at this site and sets its command list. Runs on every server start
+ * Points the bot at this site and its menu button at the price form. Runs on every server start
  * (instrumentation.ts) and from `npm run telegram:webhook`; safe to repeat.
  */
 export async function registerWebhook() {
@@ -37,10 +39,11 @@ export async function registerWebhook() {
   });
   // The "menu" button beside the message box opens the price form (Mini App).
   await tg("setChatMenuButton", {
-    menu_button: { type: "web_app", text: "💰 Prices · តម្លៃ", web_app: { url: miniAppUrl()! } },
+    menu_button: { type: "web_app", text: telegramText.menuButton, web_app: { url: miniAppUrl()! } },
   });
-  await tg("setMyCommands", { commands: [{ command: "prices", description: "Update gold prices" }] });
-  await tg("setMyCommands", { commands: [{ command: "prices", description: "ធ្វើបច្ចុប្បន្នភាពតម្លៃមាស" }], language_code: "km" });
+  // Older versions listed a /prices command; the menu button replaces it.
+  await tg("deleteMyCommands", {});
+  await tg("deleteMyCommands", { language_code: "km" });
   return `${site}/api/telegram`;
 }
 

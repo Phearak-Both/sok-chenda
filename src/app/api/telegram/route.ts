@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import { revalidatePath } from "next/cache";
 import { handleUpdate, telegramConfigured } from "@/lib/telegram";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +14,7 @@ export async function POST(req: Request) {
   if (!valid) return new Response(null, { status: 401 });
 
   try {
-    const { published } = await handleUpdate(await req.json());
-    if (published) revalidatePath("/", "layout");
+    await handleUpdate(await req.json());
   } catch (err) {
     // Answer 200 anyway: Telegram would otherwise resend the same update again and again.
     console.error("Telegram update failed", err);

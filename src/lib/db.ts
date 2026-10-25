@@ -157,6 +157,10 @@ const MIGRATIONS: string[] = [
     updated_at INTEGER NOT NULL
   );
   `,
+  // Prices are now changed only in the form inside Telegram, so chat drafts are no longer kept.
+  `
+  DROP TABLE telegram_state;
+  `,
 ];
 
 function migrate(db: Database.Database) {

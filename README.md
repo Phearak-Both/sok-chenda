@@ -103,16 +103,16 @@ Then add your own domain under **Settings → Custom Domains** and update `SITE_
 
 ## Telegram bot
 
-The owner can update the gold prices from Telegram. **💰 Update gold prices** (or the bot's menu button beside the message box) opens a price form inside Telegram: every metal's sell and buy price on one screen, changed fields highlighted with the old price beside them, and Telegram's own **Publish** button at the bottom. The website's price bar updates straight away and the bot sends a confirmation. The form (`/telegram/prices`) only opens from Telegram; the server checks Telegram's signature and the owner's ID before saving.
+The owner updates the gold prices in a form inside Telegram. **💰 ប្ដូរតម្លៃមាស** (the button under the message box) or the bot's menu button **💰 តម្លៃមាស** opens it: every metal's sell and buy price on one screen, changed fields highlighted with the old price beside them, and Telegram's own **ផ្សព្វផ្សាយ** (Publish) button at the bottom. The website's price bar updates straight away and the bot sends a confirmation. The bot and the form are in Khmer only and follow the Telegram colour theme.
 
-Or send all prices in one message: sell then buy for each metal, in the order Kilo gold, Platinum 7 VN, Platinum 7, Platinum 5, e.g. `488 473 / 307 267 / 341 291 / 244 194` (`-` keeps a price; Khmer digits work too). The bot shows old → new and publishes when you tap **✅ Publish**. Any other message gets today's prices as a line to copy and edit. Without an `https://` `SITE_URL` the form is unavailable and only the one-message way works. The bot and the form follow the owner's Telegram language (Khmer or English) and, for the form, the Telegram colour theme. The form also has an **EN | ខ្មែរ** switch, remembered on that phone.
+The form (`/telegram/prices`) only works when opened from Telegram; the server checks Telegram's signature and the owner's ID before saving. It needs an `https://` `SITE_URL`. The bot does nothing else: any message gets the button that opens the form.
 
 Setting it up:
 
 1. In Telegram, message **@BotFather** → `/newbot` → choose a name and a username ending in `bot`. BotFather replies with a **token**.
 2. In the server's settings (Render → Environment): `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_WEBHOOK_SECRET` (make up 16+ letters and digits) and `SITE_URL` (the site's `https://` address, no trailing slash). After the next start the log shows `Telegram webhook set to …`, or why it couldn't.
 3. Message the bot. It replies with your **Telegram ID**. Add it as `TELEGRAM_OWNER_IDS` (several people: comma-separated, e.g. `123456789,987654321`).
-4. Message the bot again and tap **💰 Update gold prices**.
+4. Message the bot again and tap **💰 ប្ដូរតម្លៃមាស**.
 
 Only the IDs in `TELEGRAM_OWNER_IDS` can change prices. `npm run telegram:webhook` re-registers the bot by hand.
 
