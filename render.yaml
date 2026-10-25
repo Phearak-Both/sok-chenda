@@ -25,3 +25,12 @@ services:
         sync: false
       - key: OWNER_PASSWORD
         sync: false
+      # Optional Telegram bot for the gold prices (README → Telegram bot).
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      # 16+ letters, digits, _ or - (Telegram allows nothing else).
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      # Telegram user IDs allowed to change prices, comma-separated. The bot tells you yours.
+      - key: TELEGRAM_OWNER_IDS
+        sync: false

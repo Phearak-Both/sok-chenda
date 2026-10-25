@@ -146,6 +146,17 @@ const MIGRATIONS: string[] = [
   DROP INDEX owners_telegram;
   ALTER TABLE owners DROP COLUMN telegram_user_id;
   `,
+  // Telegram bot, second version: owners are listed in TELEGRAM_OWNER_IDS; only the
+  // in-progress price draft of each chat is stored (see lib/telegram.ts).
+  `
+  CREATE TABLE telegram_state (
+    chat_id INTEGER PRIMARY KEY,
+    step TEXT NOT NULL,
+    metal TEXT,
+    draft TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+  `,
 ];
 
 function migrate(db: Database.Database) {
