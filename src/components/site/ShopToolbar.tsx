@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useEffect, useRef, useState, useTransition } from "react";
+import { type ReactNode, useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
 import { useI18n } from "@/i18n/client";
 import { gradeLabel, metalLabel, PLATINUM_GRADES, PLATINUM_LABEL } from "@/lib/metal";
 import { CheckIcon, ChevronDown, SearchIcon } from "../icons";
@@ -148,7 +148,17 @@ function ChipMenu({
   className: string;
 }) {
   const [open, setOpen] = useState(false);
+  // Open towards whichever side has room, so the menu never runs off the edge of a narrow screen.
+  const [alignRight, setAlignRight] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open || !root.current || !menu.current) return;
+    const chip = root.current.getBoundingClientRect();
+    const width = menu.current.offsetWidth;
+    setAlignRight(chip.left + width > document.documentElement.clientWidth - 8 && chip.right - width >= 8);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -172,9 +182,12 @@ function ChipMenu({
       </button>
       {open && (
         <div
+          ref={menu}
           role="menu"
           aria-label={name}
-          className="absolute right-0 top-full z-20 mt-2 w-52 rounded-xl border border-line bg-ivory p-1.5 shadow-[0_12px_32px_-12px_rgb(26_23_20/0.25)] lg:left-0 lg:right-auto"
+          className={`absolute top-full z-20 mt-2 w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-line bg-ivory p-1.5 shadow-[0_12px_32px_-12px_rgb(26_23_20/0.25)] ${
+            alignRight ? "right-0" : "left-0"
+          }`}
         >
           {options.map((o) => {
             const checked = value === o.value;
