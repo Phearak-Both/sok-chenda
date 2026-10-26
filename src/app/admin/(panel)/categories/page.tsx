@@ -5,10 +5,12 @@ import { ConfirmButton } from "@/components/admin/fields";
 import { TrashIcon } from "@/components/icons";
 import { fmt } from "@/i18n/format";
 import { getDictionary } from "@/i18n/server";
+import { requireOwner } from "@/lib/auth";
 import { listCategories } from "@/lib/catalog";
 import { pick } from "@/lib/types";
 
 export default async function CategoriesPage() {
+  await requireOwner();
   const { t, locale } = await getDictionary();
   const c = t.admin.categories;
   const categories = listCategories();

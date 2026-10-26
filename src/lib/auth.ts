@@ -68,7 +68,8 @@ const MAX_FAILURES = 8;
 
 export async function clientIp() {
   const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || "local";
+  // The last X-Forwarded-For entry is added by the host's proxy; earlier ones come from the client and can be faked.
+  return h.get("x-forwarded-for")?.split(",").at(-1)?.trim() || h.get("x-real-ip") || "local";
 }
 
 export function isThrottled(keys: string[]) {
