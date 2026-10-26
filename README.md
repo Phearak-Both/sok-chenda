@@ -86,20 +86,14 @@ Serve the site over HTTPS (any reverse proxy or the host's built-in TLS). Login 
 
 ### Render
 
-`render.yaml` is set up as a **free preview** for checking the design. Render's free plan has no disk, so every start (after a deploy, or when the site wakes from sleep) builds a fresh database with the starter collections and the sample products, and creates the owner login from `OWNER_EMAIL` / `OWNER_PASSWORD`. **Anything entered in the dashboard is lost at the next restart.** The site sleeps after about 15 minutes without visitors; the next visit takes about a minute.
+`render.yaml` sets up the **live site**: a Starter instance (paid; the free plan has no disk) with a 1 GB persistent disk at `/data` (`DATA_DIR=/data`) for the database and photos. Render takes daily snapshots of the disk. The first start creates the starter collections, without sample products.
 
-1. Render → **New → Blueprint** → connect this repository and pick the branch to preview. Render reads `render.yaml`.
+1. Render → **New → Blueprint** → connect this repository and pick the `main` branch. Render reads `render.yaml`.
 2. Fill in the variables Render asks for:
    - `SITE_URL`: the site's address, e.g. `https://sok-chenda.onrender.com` (you can set it after the first deploy shows the address).
    - `OWNER_EMAIL` and `OWNER_PASSWORD` (at least the minimum length): the dashboard login.
-3. Open the site, and the dashboard at `/admin`.
-
-**Going live** needs a disk, which needs a paid instance (Starter or above). In `render.yaml`:
-- set `plan: starter`;
-- add `disk: { name: data, mountPath: /data, sizeGB: 1 }` and the variable `DATA_DIR=/data`;
-- change the setup step to `npm run setup -- --no-samples`.
-
-Then add your own domain under **Settings → Custom Domains** and update `SITE_URL`. Render takes daily snapshots of the disk.
+3. Open the site, sign in to the dashboard at `/admin`, then **delete `OWNER_PASSWORD`** in Render → Environment. While it is set, every start resets the password to it and signs out every session; change the password in the dashboard instead.
+4. Add your own domain under **Settings → Custom Domains** and update `SITE_URL`.
 
 ## Telegram bot
 
@@ -116,7 +110,7 @@ Setting it up:
 
 Only the IDs in `TELEGRAM_OWNER_IDS` can change prices. `npm run telegram:webhook` re-registers the bot by hand.
 
-On Render's free plan the database is rebuilt whenever the site sleeps or redeploys, so published prices are lost then; the bot itself keeps working. Use a paid plan with a disk to keep prices.
+The prices are stored in the database, so on a server without a persistent disk they are lost at each restart.
 
 ## Security notes
 
