@@ -5,6 +5,7 @@ import { ConfirmButton } from "@/components/admin/fields";
 import { CheckIcon, PlusIcon } from "@/components/icons";
 import { fmt } from "@/i18n/format";
 import { getDictionary } from "@/i18n/server";
+import { requireOwner } from "@/lib/auth";
 import { countProductsByStatus, listProducts } from "@/lib/catalog";
 import { hasDirectContact } from "@/lib/contact";
 import { mediaUrl } from "@/lib/media-url";
@@ -12,6 +13,7 @@ import { getSetting } from "@/lib/settings";
 import { pick } from "@/lib/types";
 
 export default async function OverviewPage({ searchParams }: { searchParams: Promise<{ samples?: string }> }) {
+  await requireOwner();
   const { t, locale } = await getDictionary();
   const o = t.admin.overview;
   const counts = countProductsByStatus();

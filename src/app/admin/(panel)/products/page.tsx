@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/admin/AdminShell";
 import { ActionButton } from "@/components/admin/fields";
 import { EyeIcon, PlusIcon, SearchIcon, StarIcon } from "@/components/icons";
 import { getDictionary } from "@/i18n/server";
+import { requireOwner } from "@/lib/auth";
 import { listCategories, listProducts } from "@/lib/catalog";
 import { mediaUrl } from "@/lib/media-url";
 import { formatWeightKm } from "@/lib/weight";
@@ -20,6 +21,7 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ status?: string; q?: string }>;
 }) {
+  await requireOwner();
   const { t, locale } = await getDictionary();
   const p = t.admin.products;
   const sp = await searchParams;

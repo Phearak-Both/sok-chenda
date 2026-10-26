@@ -6,6 +6,7 @@ import { ProductForm } from "@/components/admin/ProductForm";
 import { TrashIcon } from "@/components/icons";
 import { fmt } from "@/i18n/format";
 import { getDictionary } from "@/i18n/server";
+import { requireOwner } from "@/lib/auth";
 import { getProduct } from "@/lib/catalog";
 import { pick } from "@/lib/types";
 import { productFormOptions } from "../options";
@@ -17,6 +18,7 @@ export default async function EditProductPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ created?: string }>;
 }) {
+  await requireOwner();
   const product = getProduct(Number((await params).id));
   if (!product) notFound();
   const { t, locale } = await getDictionary();

@@ -1,12 +1,14 @@
 import { PageHeader } from "@/components/admin/AdminShell";
 import { PricesForm } from "@/components/admin/PricesForm";
 import { getDictionary } from "@/i18n/server";
+import { requireOwner } from "@/lib/auth";
 import { formatUpdated } from "@/lib/prices";
 import { getSetting } from "@/lib/settings";
 
 const cambodiaDay = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "Asia/Phnom_Penh" });
 
 export default async function PricesPage() {
+  await requireOwner();
   const { t, locale } = await getDictionary();
   const prices = getSetting("prices");
   const updated = prices.updatedAt ? formatUpdated(prices.updatedAt, locale) : null;
