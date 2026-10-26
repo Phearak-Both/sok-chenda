@@ -1,28 +1,35 @@
-# Render Blueprint: a FREE preview of the site, for checking the design.
+# Render Blueprint: the live site.
 #
-# The free plan has no disk, so the database and photos are rebuilt from scratch on every
-# start (after each deploy, and after the service wakes from sleep). Each start creates the
-# starter collections, the sample products and, if OWNER_EMAIL is set, the owner login.
-# Anything entered in the dashboard is lost at the next restart.
+# The database and uploaded photos live on the persistent disk at /data, so they survive
+# deploys and restarts. Render takes daily snapshots of the disk.
 #
-# Going live: set `plan: starter`, add
-#     disk: { name: data, mountPath: /data, sizeGB: 1 }
-# add the variable DATA_DIR=/data, and use `npm run setup -- --no-samples` in startCommand.
+# The first start creates the tables and the starter collections (no sample products). If
+# OWNER_EMAIL and OWNER_PASSWORD are set, each start also creates the owner login, or resets
+# its password to OWNER_PASSWORD and signs out every session. So once you can sign in, delete
+# OWNER_PASSWORD in Render → Environment; change the password in the dashboard from then on.
 services:
   - type: web
     name: sok-chenda
     runtime: node
-    plan: free
+    plan: starter
     buildCommand: npm ci && npm run build
-    startCommand: npm run setup && { [ -z "$OWNER_EMAIL" ] || npm run owner:create; } && npm start
+    startCommand: npm run setup -- --no-samples && { [ -z "$OWNER_EMAIL" ] || [ -z "$OWNER_PASSWORD" ] || npm run owner:create; } && npm start
     healthCheckPath: /
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "22"
+      - key: DATA_DIR
+        value: /data
+      # The site's https:// address (your own domain once added), no trailing slash.
       - key: SITE_URL
         sync: false
       - key: OWNER_EMAIL
         sync: false
+      # Only for the first sign-in; delete it afterwards (see above).
       - key: OWNER_PASSWORD
         sync: false
       # Optional Telegram bot for the gold prices (README → Telegram bot).
